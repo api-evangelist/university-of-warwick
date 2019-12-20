@@ -1,0 +1,52 @@
+{
+    "name": "University of Warwick",
+    "description": "The official home of Warwick Students' Union on Facebook. Click 'Like' for all the latest info about events, campaigns and happenings at your SU.     It's your Union. Be part of it!",
+    "image": "http:\/\/kinlane-productions.s3.amazonaws.com\/screen-capture-api\/2056-university-of-warwick.jpg",
+    "tags": [
+        "have api",
+        "identities",
+        "marketplaces",
+        "universities",
+        "university group",
+        "university in progress"
+    ],
+    "created": "2019-12-19",
+    "modified": "2019-12-19",
+    "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/university-of-warwick\/master\/apis.json",
+    "specificationVersion": "0.14",
+    "apis": [
+        {
+            "name": "University of Warwick",
+            "description": null,
+            "image": "http:\/\/kinlane-productions.s3.amazonaws.com\/screen-capture-api\/2056-university-of-warwick.jpg",
+            "humanURL": "http:\/\/www.warwicksu.com",
+            "baseURL": "",
+            "tags": [],
+            "properties": [
+                {
+                    "type": "x-openapi",
+                    "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/1forge\/master\/university-of-warwick-openapi.json"
+                }
+            ]
+        }
+    ],
+    "include": [],
+    "x-common": [
+        {
+            "type": "Crunchbase",
+            "url": "https:\/\/crunchbase.com\/organization\/warwick-su\/people"
+        },
+        {
+            "type": "Developers",
+            "url": "http:\/\/www.warwicksu.com\/membershipapi\/about\/"
+        },
+        {
+            "type": "Twitter",
+            "url": "https:\/\/twitter.com\/WarwickSU"
+        },
+        {
+            "type": "Website",
+            "url": "http:\/\/www.warwicksu.com"
+        }
+    ]
+}
