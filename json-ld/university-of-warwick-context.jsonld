@@ -1,0 +1,81 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "warwick": "https://warwick.ac.uk/ns#",
+    "name": "name",
+    "description": "description",
+    "url": "url",
+    "logo": "logo",
+    "sameAs": "sameAs",
+    "foundingLocation": "foundingLocation",
+    "department": "department",
+    "Organization": "Organization",
+    "CollegeOrUniversity": "CollegeOrUniversity",
+    "WebAPI": "WebAPI",
+    "api": {
+      "@id": "warwick:api",
+      "@type": "@id"
+    },
+    "documentation": {
+      "@id": "documentation",
+      "@type": "@id"
+    },
+    "baseURL": {
+      "@id": "warwick:baseURL",
+      "@type": "@id"
+    },
+    "humanURL": {
+      "@id": "warwick:humanURL",
+      "@type": "@id"
+    },
+    "provider": "provider",
+    "termsOfService": "termsOfService"
+  },
+  "@type": "CollegeOrUniversity",
+  "name": "University of Warwick",
+  "url": "https://warwick.ac.uk/",
+  "description": "A public research university in Coventry, England. Its developer/API footprint is provided primarily by the institution's Software Engineering / IT Services and IDG teams.",
+  "sameAs": [
+    "https://github.com/universityofwarwick",
+    "https://www.linkedin.com/school/the-university-of-warwick/"
+  ],
+  "api": [
+    {
+      "@type": "WebAPI",
+      "name": "Tabula API",
+      "description": "REST API for Tabula, Warwick's tool for the administration of teaching and learning, including timetabling, profiles, coursework, small group teaching and monitoring points.",
+      "humanURL": "https://warwick.ac.uk/services/idg/services-support/web/tabula/api/",
+      "baseURL": "https://tabula.warwick.ac.uk/api/v1",
+      "documentation": "https://warwick.ac.uk/services/idg/services-support/web/tabula/api/"
+    },
+    {
+      "@type": "WebAPI",
+      "name": "Files.Warwick API",
+      "description": "HTTP-based APIs to automate tasks against the Files.Warwick file storage service, protected via Warwick web sign-on / OAuth.",
+      "humanURL": "https://warwick.ac.uk/services/its/servicessupport/web/files/api/",
+      "documentation": "https://warwick.ac.uk/services/its/servicessupport/web/files/api/"
+    },
+    {
+      "@type": "WebAPI",
+      "name": "Warwick OAuth Web Services",
+      "description": "OAuth-protected access to Warwick web services including Sitebuilder, Warwick Search, Files.Warwick, Warwick Blogs, Warwick Forums, Exam Timetabling, Printer Credits and Web Sign-on.",
+      "humanURL": "https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/",
+      "documentation": "https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/"
+    },
+    {
+      "@type": "WebAPI",
+      "name": "Warwick SU Membership API",
+      "description": "REST API provided by the Warwick Students' Union to validate membership and retrieve member rosters.",
+      "humanURL": "https://www.warwicksu.com/membershipapi/about/",
+      "documentation": "https://www.warwicksu.com/membershipapi/about/"
+    },
+    {
+      "@type": "WebAPI",
+      "name": "WRAP OAI-PMH (Warwick Research Archive Portal)",
+      "description": "Institutional repository of research outputs exposing harvestable Dublin Core metadata via the OAI-PMH protocol.",
+      "humanURL": "https://wrap.warwick.ac.uk/",
+      "baseURL": "https://wrap.warwick.ac.uk/cgi/oai2",
+      "documentation": "https://wrap.warwick.ac.uk/"
+    }
+  ]
+}
