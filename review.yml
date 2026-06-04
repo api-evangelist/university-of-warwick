@@ -1,0 +1,52 @@
+---
+name: University of Warwick
+description: University of Warwick public developer/API footprint review for APIs.json cataloging.
+url: https://raw.githubusercontent.com/api-evangelist/university-of-warwick/refs/heads/main/review.yml
+created: '2026-06-03'
+modified: '2026-06-03'
+reviews:
+  - date: '2026-06-03'
+    rating: 3
+    summary: >-
+      Warwick has a genuine, well-documented developer footprint led by its IT
+      Services / IDG Software Engineering team. The Tabula REST API is the strongest
+      asset, with detailed docs across timetabling, profiles, coursework, small group
+      teaching and monitoring points, plus a sandbox; Files.Warwick and OAuth-protected
+      web services (OAuth 1.0) are also documented. The Warwick SU Membership API and
+      the WRAP institutional repository OAI-PMH endpoint round out the public surface.
+      All documentation pages and the official verified GitHub org resolved HTTP 200.
+      Access to most APIs is gated behind Warwick web sign-on / OAuth credentials, so
+      they are not openly consumable without an account. No fabricated endpoints — only
+      URLs and resources confirmed live were cataloged. Rated 3/5 for solid docs but
+      credential-gated, account-only access.
+    endpoints:
+      - url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
+        status: 200
+        note: Tabula API documentation; live.
+      - url: https://tabula.warwick.ac.uk/
+        status: 200
+        note: Tabula application / API host; live.
+      - url: https://warwick.ac.uk/services/its/servicessupport/web/files/api/
+        status: 200
+        note: Files.Warwick API docs; live.
+      - url: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
+        status: 200
+        note: OAuth (1.0) web services docs; live.
+      - url: https://www.warwicksu.com/membershipapi/about/
+        status: 200
+        note: Warwick SU Membership API docs; live.
+      - url: https://wrap.warwick.ac.uk/
+        status: 200
+        note: Warwick Research Archive Portal (WRAP); live.
+      - url: https://wrap.warwick.ac.uk/cgi/oai2
+        status: 200
+        note: WRAP OAI-PMH metadata harvesting endpoint; resolves.
+      - url: https://github.com/universityofwarwick
+        status: 200
+        note: Official verified GitHub org (warwick.ac.uk), ~72 repos.
+      - url: https://warwick.ac.uk/
+        status: 200
+        note: Official institution website; live.
+      - url: https://www.linkedin.com/school/the-university-of-warwick/
+        status: 999
+        note: LinkedIn school page; 999 is standard anti-bot response, page exists.

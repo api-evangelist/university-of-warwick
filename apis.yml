@@ -1,0 +1,118 @@
+---
+aid: university-of-warwick
+name: University of Warwick
+description: >-
+  The University of Warwick is a public research university in Coventry, England,
+  ranked #49 in the QS World University Rankings 2025. Its developer/API footprint
+  is provided primarily by the institution's Software Engineering / IT Services and
+  IDG teams. Public, documented APIs include the Tabula REST API (teaching and
+  learning administration, including timetabling, profiles, coursework, small group
+  teaching and monitoring points), the Files.Warwick file APIs, and OAuth-protected
+  Warwick web services. The Warwick Students' Union additionally publishes a
+  Membership API, and the Warwick Research Archive Portal (WRAP) exposes harvestable
+  metadata via OAI-PMH. Most APIs require Warwick web sign-on / OAuth credentials and
+  are not openly available without an account.
+type: Index
+position: Consumer
+access: 3rd-Party
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+url: https://raw.githubusercontent.com/api-evangelist/university-of-warwick/refs/heads/main/apis.yml
+tags:
+  - Education
+  - Higher Education
+  - University
+  - Research
+  - United Kingdom
+  - Student Information System
+  - Timetabling
+created: '2026-06-03'
+modified: '2026-06-03'
+specificationVersion: '0.19'
+apis:
+  - aid: university-of-warwick:tabula
+    name: Tabula API
+    description: >-
+      REST API for Tabula, Warwick's tool for the administration of teaching and
+      learning. Uses resource-oriented URLs and returns JSON. Categories include
+      Administration & Information (departments, modules), Coursework Management,
+      Small Group Teaching, Monitoring Points, Profiles, Timetabling (events,
+      schedules, term dates), Attachments and Jobs. All resources are protected by
+      Warwick web sign-on; a sandbox is available at tabula-sandbox.warwick.ac.uk.
+    humanURL: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
+    baseURL: https://tabula.warwick.ac.uk/api/v1
+    tags: [ Timetabling, Student Information System, Coursework, Education ]
+    properties:
+      - type: Documentation
+        url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
+      - type: Documentation
+        url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/timetabling
+  - aid: university-of-warwick:files
+    name: Files.Warwick API
+    description: >-
+      HTTP-based APIs that enable developers to write scripts to automate tasks
+      against the Files.Warwick file storage service. Access is protected via
+      Warwick web sign-on / OAuth.
+    humanURL: https://warwick.ac.uk/services/its/servicessupport/web/files/api/
+    tags: [ Files, Storage, Education ]
+    properties:
+      - type: Documentation
+        url: https://warwick.ac.uk/services/its/servicessupport/web/files/api/
+  - aid: university-of-warwick:oauth
+    name: Warwick OAuth Web Services
+    description: >-
+      OAuth-protected access to Warwick web services, including Sitebuilder, Warwick
+      Search, Files.Warwick, Warwick Blogs, Warwick Forums, Exam Timetabling, Printer
+      Credits and Web Sign-on. Uses OAuth 1.0 with RSA-SHA1 / HMAC-SHA1 signing.
+      Example implementations are published in Python 3 and JavaScript.
+    humanURL: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
+    tags: [ Authentication, OAuth, Identity, Education ]
+    properties:
+      - type: Documentation
+        url: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
+      - type: Authentication
+        url: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
+  - aid: university-of-warwick:su-membership
+    name: Warwick SU Membership API
+    description: >-
+      REST API provided by the Warwick Students' Union that lets clubs, societies and
+      organisations validate membership and retrieve member rosters. Uses an
+      organisation key plus per-member keys generated through exec tools.
+    humanURL: https://www.warwicksu.com/membershipapi/about/
+    tags: [ Membership, Students Union, Identity, Education ]
+    properties:
+      - type: Documentation
+        url: https://www.warwicksu.com/membershipapi/about/
+  - aid: university-of-warwick:wrap-oai
+    name: WRAP OAI-PMH (Warwick Research Archive Portal)
+    description: >-
+      Warwick Research Archive Portal (WRAP) is the institutional repository of
+      research outputs. It exposes harvestable Dublin Core metadata via the
+      standard OAI-PMH protocol for open metadata harvesting.
+    humanURL: https://wrap.warwick.ac.uk/
+    baseURL: https://wrap.warwick.ac.uk/cgi/oai2
+    tags: [ Research, Repository, OAI-PMH, Open Data, Education ]
+    properties:
+      - type: Documentation
+        url: https://wrap.warwick.ac.uk/
+      - type: OAI-PMH
+        url: https://wrap.warwick.ac.uk/cgi/oai2
+common:
+  - type: Website
+    url: https://warwick.ac.uk/
+  - type: GitHub
+    url: https://github.com/universityofwarwick
+  - type: LinkedIn
+    url: https://www.linkedin.com/school/the-university-of-warwick/
+  - type: DeveloperPortal
+    url: https://warwick.ac.uk/services/idg/services-support/web/
+  - type: Plans
+    url: plans/university-of-warwick-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/university-of-warwick-rate-limits.yml
+  - type: FinOps
+    url: finops/university-of-warwick-finops.yml
+  - type: Review
+    url: review.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
