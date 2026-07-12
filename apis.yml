@@ -97,6 +97,10 @@ apis:
       - type: OAI-PMH
         url: https://wrap.warwick.ac.uk/cgi/oai2
 common:
+  - type: VulnerabilityDisclosure
+    url: security/university-of-warwick-vulnerability-disclosure.yml
+  - type: DomainSecurity
+    url: security/university-of-warwick-domain-security.yml
   - type: Website
     url: https://warwick.ac.uk/
   - type: GitHub
