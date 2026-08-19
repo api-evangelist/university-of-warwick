@@ -1,114 +1,377 @@
 aid: university-of-warwick
 name: University of Warwick
 description: >-
-  The University of Warwick is a public research university in Coventry, England,
-  ranked #49 in the QS World University Rankings 2025. Its developer/API footprint
-  is provided primarily by the institution's Software Engineering / IT Services and
-  IDG teams. Public, documented APIs include the Tabula REST API (teaching and
-  learning administration, including timetabling, profiles, coursework, small group
-  teaching and monitoring points), the Files.Warwick file APIs, and OAuth-protected
-  Warwick web services. The Warwick Students' Union additionally publishes a
-  Membership API, and the Warwick Research Archive Portal (WRAP) exposes harvestable
-  metadata via OAI-PMH. Most APIs require Warwick web sign-on / OAuth credentials and
-  are not openly available without an account.
+  The University of Warwick is a public research university in Coventry, England, and a member of
+  the Russell Group. Unusually for this cohort, Warwick genuinely operates its own programmable
+  surface rather than pointing at a vendor's: Tabula, its teaching-and-learning administration
+  system, is built and run by Warwick's own Information and Digital Group (IDG) software
+  engineering team and exposes a documented, versioned REST API on tabula.warwick.ac.uk — three
+  of whose calendar endpoints (term dates, term weeks, holiday dates) are fully public, return
+  live JSON and iCalendar without credentials, and were verified working on 2026-08-19. Warwick
+  also runs its own central identity infrastructure: a Shibboleth SAML 2.0 identity provider at
+  idp.warwick.ac.uk publishing unauthenticated, machine-readable federation metadata carrying
+  REFEDS SIRTFI and Research-and-Scholarship entity attributes, plus a Web Sign-on OAuth 1.0a
+  service with nine documented Warwick-specific scopes. Its institutional repository, WRAP, is a
+  self-hosted EPrints instance on Warwick infrastructure serving a live OAI-PMH 2.0 endpoint with
+  seven metadata formats including RIOXX 2.0 and OpenAIRE. Warwick additionally publishes an
+  llms.txt that documents a real agent affordance rather than merely listing links — appending
+  `?markdown` to any warwick.ac.uk page returns that page as Markdown, which was verified.
+
+  The honest limits: Warwick publishes no OpenAPI, AsyncAPI, JSON Schema or Postman collection
+  for any of its APIs — every machine-readable contract in this repository was derived by API
+  Evangelist from Warwick's documentation and live probes, and is marked as such. There is no
+  changelog, no status page, no deprecation policy and no public issue tracker. Most of the
+  surface is gated behind Warwick Web Sign-on and is not consumable without an institutional
+  account, sandbox access is by email request rather than self-service, and the delegated
+  authorization standard is OAuth 1.0a rather than OAuth 2.0 or OIDC. Its library discovery and
+  students' union surfaces are vendor platforms running under Warwick-specific hostnames and are
+  recorded here as tenant relationships, not as Warwick's engineering.
+x-type: university
+x-category: Public Research University
 type: Index
 accessModel:
   pricing: free
-  onboarding: unknown
+  onboarding: request
   trial: false
-  try_now: false
-  public: false
+  try_now: true
+  public: partial
   label: Free
-  confidence: medium
+  confidence: high
   source:
     - plans
-  generated: '2026-07-22'
-  method: derived
+    - probe
+  note: >-
+    try_now is true and public is partial because three Tabula calendar endpoints genuinely
+    require no credentials and were probed returning live data. Everything else needs a Warwick
+    Web Sign-on account, which is not available to the public, and sandbox access is granted by
+    email request only.
+  generated: '2026-08-19'
+  method: probed
 position: Consumer
 access: 3rd-Party
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/university-of-warwick.png
 url: https://raw.githubusercontent.com/api-evangelist/university-of-warwick/refs/heads/main/apis.yml
 tags:
-  - Education
-  - Higher Education
   - University
+  - Higher Education
+  - Education
   - Research
   - United Kingdom
-  - Student Information System
+  - Russell Group
+  - Identity Federation
+  - Research Repository
+  - Course Catalog
   - Timetabling
+  - Student Information System
+  - Open Data
 created: '2026-06-03'
-modified: '2026-07-25'
+modified: '2026-08-19'
 specificationVersion: '0.23'
 apis:
   - aid: university-of-warwick:tabula
     name: Tabula API
     description: >-
-      REST API for Tabula, Warwick's tool for the administration of teaching and
-      learning. Uses resource-oriented URLs and returns JSON. Categories include
-      Administration & Information (departments, modules), Coursework Management,
-      Small Group Teaching, Monitoring Points, Profiles, Timetabling (events,
-      schedules, term dates), Attachments and Jobs. All resources are protected by
-      Warwick web sign-on; a sandbox is available at tabula-sandbox.warwick.ac.uk.
+      REST API for Tabula, the University of Warwick's own system for the administration of
+      teaching and learning. Built and operated by Warwick's IDG / IT Services software
+      engineering team — the iCalendar responses carry
+      PRODID:-//Tabula//University of Warwick IT Services//EN. Resource-oriented URLs, JSON in
+      all responses including errors, and a published versioning promise. Covers departments and
+      modules, coursework and submissions, small group teaching, monitoring points, member
+      profiles, timetabling and asynchronous jobs. Term dates, term weeks and holiday dates are
+      public and need no credentials; everything else requires Warwick Web Sign-on via HTTP Basic
+      Auth or OAuth 1.0a. A sandbox with fake student data is available on request.
+    x-operator: institution
+    x-operator-evidence: >-
+      Host tabula.warwick.ac.uk is under Warwick's own registrable domain; the iCalendar PRODID
+      names University of Warwick IT Services as the producer; source repositories sit under the
+      institution's own GitHub organisation.
     humanURL: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
     baseURL: https://tabula.warwick.ac.uk/api/v1
-    tags: [Timetabling, Student Information System, Coursework, Education]
+    tags: [Timetabling, Student Information System, Coursework, Course Catalog, Education]
     properties:
       - type: Documentation
         url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
       - type: Documentation
         url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/timetabling
-  - aid: university-of-warwick:files
-    name: Files.Warwick API
+      - type: Authentication
+        url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/authentication
+      - type: OpenAPI
+        url: openapi/university-of-warwick-tabula-openapi.yml
+      - type: JSONSchema
+        url: json-schema/university-of-warwick-tabula-termdates.json
+      - type: JSONSchema
+        url: json-schema/university-of-warwick-tabula-holidaydates.json
+      - type: JSONSchema
+        url: json-schema/university-of-warwick-tabula-termweeks.json
+      - type: JSONSchema
+        url: json-schema/university-of-warwick-tabula-error.json
+      - type: Errors
+        url: errors/university-of-warwick-problem-types.yml
+      - type: Lifecycle
+        url: lifecycle/university-of-warwick-lifecycle.yml
+      - type: Examples
+        url: examples/university-of-warwick-tabula-termdates.json
+      - type: Sandbox
+        url: https://tabula-sandbox.warwick.ac.uk/
+  - aid: university-of-warwick:identity-federation
+    name: Warwick Shibboleth Identity Provider
     description: >-
-      HTTP-based APIs that enable developers to write scripts to automate tasks
-      against the Files.Warwick file storage service. Access is protected via
-      Warwick web sign-on / OAuth.
-    humanURL: https://warwick.ac.uk/services/its/servicessupport/web/files/api/
-    tags: [Files, Storage, Education]
+      Warwick's Shibboleth SAML 2.0 identity provider. Publishes unauthenticated, machine-readable
+      federation metadata as a SAML EntityDescriptor with entityID
+      https://idp.warwick.ac.uk/idp/shibboleth, a shibmd:Scope of warwick.ac.uk, and entity
+      attributes asserting REFEDS SIRTFI assurance certification and the REFEDS Research and
+      Scholarship entity category. Institution-operated by definition — a university cannot
+      outsource being its own identity authority — and this is the single most substantive
+      machine-readable artifact Warwick publishes.
+    x-operator: institution
+    x-operator-evidence: >-
+      Host idp.warwick.ac.uk is Warwick's own; the metadata asserts entityID and scope under
+      warwick.ac.uk and is signed with a certificate issued to idp.warwick.ac.uk.
+    humanURL: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/
+    baseURL: https://idp.warwick.ac.uk/idp/shibboleth
+    tags: [Identity Federation, SAML, Shibboleth, Authentication, Education]
     properties:
-      - type: Documentation
-        url: https://warwick.ac.uk/services/its/servicessupport/web/files/api/
+      - type: IdentityFederation
+        url: https://idp.warwick.ac.uk/idp/shibboleth
+      - type: Authentication
+        url: authentication/university-of-warwick-authentication.yml
+      - type: Conformance
+        url: conformance/university-of-warwick-conformance.yml
   - aid: university-of-warwick:oauth
-    name: Warwick OAuth Web Services
+    name: Warwick Web Sign-on OAuth Services
     description: >-
-      OAuth-protected access to Warwick web services, including Sitebuilder, Warwick
-      Search, Files.Warwick, Warwick Blogs, Warwick Forums, Exam Timetabling, Printer
-      Credits and Web Sign-on. Uses OAuth 1.0 with RSA-SHA1 / HMAC-SHA1 signing.
-      Example implementations are published in Python 3 and JavaScript.
+      OAuth 1.0a delegated access to Warwick web services — Sitebuilder (separate read and edit
+      scopes), Warwick Search, Files.Warwick, Warwick Blogs, Warwick Forums, Exam Timetabling,
+      Printer Credits and Web Sign-on itself. Signed with RSA-SHA1 or HMAC-SHA1. Uses a
+      Warwick-specific `scope` parameter that is not part of the OAuth standard and cannot travel
+      in the Authorization header. Applications must be registered with the ITS Web Team before a
+      token will be issued. Note this is OAuth 1.0a, not OAuth 2.0, and there is no OIDC discovery
+      document — /.well-known/openid-configuration returns 404.
+    x-operator: institution
+    x-operator-evidence: >-
+      Token endpoints are on websignon.warwick.ac.uk, Warwick's own host; the scope URNs name
+      Warwick services exclusively.
     humanURL: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
+    baseURL: https://websignon.warwick.ac.uk/oauth
     tags: [Authentication, OAuth, Identity, Education]
     properties:
       - type: Documentation
         url: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
       - type: Authentication
-        url: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
+        url: authentication/university-of-warwick-authentication.yml
+      - type: Scopes
+        url: scopes/university-of-warwick-oauth-scopes.yml
   - aid: university-of-warwick:wrap-oai
     name: WRAP OAI-PMH (Warwick Research Archive Portal)
     description: >-
-      Warwick Research Archive Portal (WRAP) is the institutional repository of
-      research outputs. It exposes harvestable Dublin Core metadata via the
-      standard OAI-PMH protocol for open metadata harvesting.
+      WRAP is the University of Warwick's institutional repository of research outputs, running
+      EPrints 3.4.5 self-hosted on Warwick infrastructure. Its OAI-PMH 2.0 endpoint is fully open
+      and was verified live on 2026-08-19: seven metadata formats (oai_dc, oai_bibl, rioxx,
+      oai_openaire, mets, didl, rdf) and 312 harvestable sets. RIOXX 2.0 supports UK REF
+      open-access compliance and the OpenAIRE profile carries DataCite kernel-4 metadata
+      elements. This is the operator distinction that matters for universities: the repository
+      SOFTWARE is a third party's, but the instance, the host, the data and the DOIs are Warwick's.
+    x-operator: institution
+    x-operator-evidence: >-
+      wrap.warwick.ac.uk resolves to coral-egret.lnx.warwick.ac.uk (137.205.66.179), Warwick's own
+      infrastructure. The OAI-PMH Identify response reports repositoryIdentifier wrap.warwick.ac.uk
+      and adminEmail wrap@warwick.ac.uk. EPrints is self-hosted open-source software, not a hosted
+      vendor tenancy.
     humanURL: https://wrap.warwick.ac.uk/
     baseURL: https://wrap.warwick.ac.uk/cgi/oai2
-    tags: [Research, Repository, OAI-PMH, Open Data, Education]
+    tags: [Research, Research Repository, OAI-PMH, Open Data, Education]
     properties:
       - type: Documentation
         url: https://wrap.warwick.ac.uk/
-      - type: OAI-PMH
-        url: https://wrap.warwick.ac.uk/cgi/oai2
+      - type: OpenAPI
+        url: openapi/university-of-warwick-wrap-oai-pmh-openapi.yml
+      - type: Examples
+        url: examples/university-of-warwick-wrap-oai-identify.xml
+      - type: Conformance
+        url: conformance/university-of-warwick-conformance.yml
+  - aid: university-of-warwick:files
+    name: Files.Warwick API
+    description: >-
+      HTTP APIs for automating tasks against Files.Warwick, the University's own file storage
+      service. Access is protected by Warwick Web Sign-on and reachable via OAuth using the
+      urn:files.warwick.ac.uk:files:service scope. Documentation is prose only — no machine-readable
+      contract is published and no unauthenticated endpoint was found, so no contract is derived
+      here.
+    x-operator: institution
+    x-operator-evidence: Documented and served under warwick.ac.uk, Warwick's own registrable domain.
+    humanURL: https://warwick.ac.uk/services/its/servicessupport/web/files/api/
+    tags: [Files, Storage, Education]
+    properties:
+      - type: Documentation
+        url: https://warwick.ac.uk/services/its/servicessupport/web/files/api/
+  - aid: university-of-warwick:moodle
+    name: Warwick Moodle Web Services
+    description: >-
+      Warwick runs a Moodle virtual learning environment at moodle.warwick.ac.uk. The Moodle web
+      service endpoint is live and responds to unauthenticated requests with a well-formed Moodle
+      exception, confirming the surface exists. Recorded for completeness with an important
+      caveat: the host and the instance are Warwick's, but the API contract is upstream Moodle's,
+      so no specification is derived or saved here — crediting Warwick for Moodle's engineering
+      would be the same error this pipeline exists to prevent. Note also that the Moodle homepage
+      returned HTTP 500 when probed on 2026-08-19.
+    x-operator: institution
+    x-operator-evidence: >-
+      moodle.warwick.ac.uk is under Warwick's own registrable domain and is a self-hosted instance;
+      however the contract itself is defined by the Moodle project, not by Warwick.
+    humanURL: https://moodle.warwick.ac.uk/
+    baseURL: https://moodle.warwick.ac.uk/webservice/rest/server.php
+    tags: [Learning Management, Education]
+    properties:
+      - type: Documentation
+        url: https://moodle.warwick.ac.uk/
+  - aid: university-of-warwick:library-discovery
+    name: Warwick Library Discovery (Summon)
+    description: >-
+      Warwick's library discovery layer. encore.lib.warwick.ac.uk issues an HTTP 302 to
+      warwick.summon.serialssolutions.com — a Warwick-specific tenancy on the Summon platform
+      operated by Serials Solutions / ProQuest. This is a real institutional fact and one of
+      Warwick's genuine surface classes, but the contract belongs to the vendor. Recorded as a
+      tenant relationship; no vendor specification is saved under this institution.
+    x-operator: tenant
+    x-operator-evidence: >-
+      encore.lib.warwick.ac.uk 302-redirects to warwick.summon.serialssolutions.com, a
+      Warwick-named account on a vendor-operated platform. Probed 2026-08-19.
+    x-vendor: Serials Solutions (ProQuest) Summon
+    humanURL: https://warwick.ac.uk/services/library/
+    tags: [Library, Library Catalog, Discovery, Education]
+    properties:
+      - type: LibraryCatalog
+        url: https://warwick.ac.uk/services/library/
+  - aid: university-of-warwick:su-membership
+    name: Warwick SU Membership API
+    description: >-
+      The Warwick Students' Union publishes a Membership API for validating membership and
+      retrieving member rosters. Two reasons this is not credited to the University: the Students'
+      Union is a separate legal entity from the University, and the site is served by the MSL
+      platform (its HTML identifies itself as "Powered by www.ukmsl.com"), so the contract is the
+      vendor's. Recorded as a tenant relationship for completeness.
+    x-operator: tenant
+    x-operator-evidence: >-
+      warwicksu.com is not under warwick.ac.uk, the Students' Union is a distinct organisation,
+      and the page markup identifies the operating platform as ukmsl.com. Probed 2026-08-19.
+    x-vendor: MSL (UK Membership Solutions Ltd)
+    humanURL: https://www.warwicksu.com/membershipapi/about/
+    tags: [Students Union, Membership, Education]
+    properties:
+      - type: Documentation
+        url: https://www.warwicksu.com/membershipapi/about/
+x-coverage:
+  state: covered
+  reason: institution_operated_surfaces_verified
+  detail: >-
+    Warwick is one of the stronger institutions in this cohort and the profile is not thin. Six
+    institution-operated surfaces were found and verified live on 2026-08-19, and two vendor
+    surfaces were correctly demoted to tenant relationships rather than being credited as
+    Warwick's. Three Tabula calendar endpoints returned live JSON and iCalendar unauthenticated;
+    every gated Tabula path returned the documented 401 envelope rather than a 404, which
+    confirmed the routes exist without credentials. The Shibboleth IdP metadata and the WRAP
+    OAI-PMH endpoint were both fetched and parsed in full.
+
+
+    What is genuinely absent, and is a finding about Warwick rather than about our reach: Warwick
+    publishes no OpenAPI, AsyncAPI, JSON Schema, apis.json or Postman collection anywhere. Both
+    OpenAPI documents in this repository are ours, derived from Warwick's prose documentation and
+    live probes, and marked method: derived / probed. There is no changelog, status page,
+    deprecation policy or public issue tracker.
+
+
+    One surface was gated to us and is recorded as such rather than as absent: warwick.ac.uk/opensource
+    returns HTTP 200 but renders a Web Sign-on wall for
+    /services/idg/services-support/web/overview/sourcecode/, so Warwick's internal source-code and
+    IDG engineering pages could not be read. No pointer is emitted to it.
+  evidence:
+    - url: https://tabula.warwick.ac.uk/api/v1/termdates
+      status: 200
+    - url: https://tabula.warwick.ac.uk/api/v1/termdates/weeks
+      status: 200
+    - url: https://tabula.warwick.ac.uk/api/v1/holidaydates
+      status: 200
+    - url: https://tabula.warwick.ac.uk/api/v1/holidaydates.ics
+      status: 200
+    - url: https://tabula.warwick.ac.uk/api/v1/department
+      status: 401
+    - url: https://idp.warwick.ac.uk/idp/shibboleth
+      status: 200
+    - url: https://wrap.warwick.ac.uk/cgi/oai2?verb=Identify
+      status: 200
+    - url: https://wrap.warwick.ac.uk/cgi/oai2?verb=ListMetadataFormats
+      status: 200
+    - url: https://warwick.ac.uk/llms.txt
+      status: 200
+    - url: https://warwick.ac.uk/about?markdown
+      status: 200
+    - url: https://warwick.ac.uk/.well-known/security.txt
+      status: 200
+    - url: https://warwick.ac.uk/.well-known/openid-configuration
+      status: 404
+    - url: https://moodle.warwick.ac.uk/webservice/rest/server.php
+      status: 200
+    - url: https://moodle.warwick.ac.uk/
+      status: 500
+    - url: https://encore.lib.warwick.ac.uk/
+      status: 302
+    - url: https://warwick.ac.uk/opensource
+      status: 200
 common:
+  - type: Website
+    url: https://warwick.ac.uk/
+  - type: About
+    url: https://warwick.ac.uk/about
+  - type: DeveloperPortal
+    url: https://warwick.ac.uk/services/idg/services-support/web/
+  - type: Documentation
+    url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
+  - type: APIReference
+    url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
+  - type: GitHub
+    url: https://github.com/universityofwarwick
+  - type: GitHubOrganization
+    url: https://github.com/universityofwarwick
+  - type: LinkedIn
+    url: https://www.linkedin.com/school/the-university-of-warwick/
+  - type: TermsOfService
+    url: https://warwick.ac.uk/terms/
+  - type: PrivacyPolicy
+    url: https://warwick.ac.uk/privacy/
+  - type: Blog
+    url: https://warwick.ac.uk/newsandevents/
+  - type: IdentityFederation
+    url: https://idp.warwick.ac.uk/idp/shibboleth
+  - type: ResearchRepository
+    url: https://wrap.warwick.ac.uk/
+  - type: LibraryCatalog
+    url: https://warwick.ac.uk/services/library/
+  - type: CourseCatalog
+    url: https://warwick.ac.uk/study
+  - type: LLMsTxt
+    url: https://warwick.ac.uk/llms.txt
+  - type: SecurityTxt
+    url: https://warwick.ac.uk/.well-known/security.txt
   - type: VulnerabilityDisclosure
     url: security/university-of-warwick-vulnerability-disclosure.yml
   - type: DomainSecurity
     url: security/university-of-warwick-domain-security.yml
-  - type: Website
-    url: https://warwick.ac.uk/
-  - type: GitHub
-    url: https://github.com/universityofwarwick
-  - type: LinkedIn
-    url: https://www.linkedin.com/school/the-university-of-warwick/
-  - type: DeveloperPortal
-    url: https://warwick.ac.uk/services/idg/services-support/web/
+  - type: Authentication
+    url: authentication/university-of-warwick-authentication.yml
+  - type: Scopes
+    url: scopes/university-of-warwick-oauth-scopes.yml
+  - type: Errors
+    url: errors/university-of-warwick-problem-types.yml
+  - type: Conformance
+    url: conformance/university-of-warwick-conformance.yml
+  - type: Lifecycle
+    url: lifecycle/university-of-warwick-lifecycle.yml
+  - type: Vocabulary
+    url: vocabulary/university-of-warwick-vocabulary.yml
+  - type: Rules
+    url: rules/university-of-warwick-openapi-spectral-rules.yml
+  - type: JSONLD
+    url: json-ld/university-of-warwick-context.jsonld
   - type: Plans
     url: plans/university-of-warwick-plans-pricing.yml
   - type: RateLimits
@@ -117,8 +380,6 @@ common:
     url: finops/university-of-warwick-finops.yml
   - type: Review
     url: review.yml
-  - type: About
-    url: https://www.warwicksu.com/membershipapi/about/
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
