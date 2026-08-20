@@ -87,6 +87,13 @@ apis:
       institution's own GitHub organisation.
     humanURL: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
     baseURL: https://tabula.warwick.ac.uk/api/v1
+    x-baseurl-note: >-
+      The base URL itself returns HTTP 404 because there is no route at the API root. This is NOT a
+      dead pointer: the 404 is Tabula's own well-formed JSON envelope
+      ({"success":false,"status":"not_found",...}), which proves the service is alive, and the
+      operations hanging off this base were verified returning 200 unauthenticated
+      (/termdates, /termdates/weeks, /holidaydates) on 2026-08-19. Do not "fix" this by changing
+      the base — it is the base Warwick documents.
     tags: [Timetabling, Student Information System, Coursework, Course Catalog, Education]
     properties:
       - type: Documentation
@@ -152,8 +159,20 @@ apis:
       Token endpoints are on websignon.warwick.ac.uk, Warwick's own host; the scope URNs name
       Warwick services exclusively.
     humanURL: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
-    baseURL: https://websignon.warwick.ac.uk/oauth
-    tags: [Authentication, OAuth, Identity, Education]
+    x-baseurl-note: >-
+      No baseURL is emitted. https://websignon.warwick.ac.uk/oauth returns HTTP 404 — there is no
+      resource at the OAuth path root, only the three named token endpoints. Those are recorded in
+      authentication/university-of-warwick-authentication.yml rather than emitted as a pointer that
+      would grade dead.
+    tags:
+    - Authentication
+    - Identity
+    - Education
+    tags_raw:
+    - Authentication
+    - OAuth
+    - Identity
+    - Education
     properties:
       - type: Documentation
         url: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
@@ -200,7 +219,14 @@ apis:
     x-operator: institution
     x-operator-evidence: Documented and served under warwick.ac.uk, Warwick's own registrable domain.
     humanURL: https://warwick.ac.uk/services/its/servicessupport/web/files/api/
-    tags: [Files, Storage, Education]
+    tags:
+    - File
+    - Storage
+    - Education
+    tags_raw:
+    - Files
+    - Storage
+    - Education
     properties:
       - type: Documentation
         url: https://warwick.ac.uk/services/its/servicessupport/web/files/api/
@@ -218,12 +244,14 @@ apis:
     x-operator-evidence: >-
       moodle.warwick.ac.uk is under Warwick's own registrable domain and is a self-hosted instance;
       however the contract itself is defined by the Moodle project, not by Warwick.
-    humanURL: https://moodle.warwick.ac.uk/
     baseURL: https://moodle.warwick.ac.uk/webservice/rest/server.php
+    x-humanurl-note: >-
+      No humanURL is emitted. https://moodle.warwick.ac.uk/ returns HTTP 500 to anonymous visitors
+      on every attempt — a Shibboleth "Single Sign-on - Stale Request" page served with a 500 — and
+      Warwick publishes no public Moodle information page (/services/its/servicessupport/web/moodle/
+      and /services/academictechnology/moodle/ both 404). Only the web service endpoint is live, so
+      only it is emitted.
     tags: [Learning Management, Education]
-    properties:
-      - type: Documentation
-        url: https://moodle.warwick.ac.uk/
   - aid: university-of-warwick:library-discovery
     name: Warwick Library Discovery (Summon)
     description: >-
