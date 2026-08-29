@@ -437,6 +437,9 @@ x-coverage:
     - url: https://warwick.ac.uk/opensource
       status: 200
 common:
+  - type: CapabilityMap
+    url: capabilities/university-of-warwick-capability-edges.yml
+    name: University of Warwick Business Capability Map
   - type: Website
     url: https://warwick.ac.uk/
   - type: About

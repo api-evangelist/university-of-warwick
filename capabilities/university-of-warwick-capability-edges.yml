@@ -1,0 +1,50 @@
+slug: university-of-warwick
+provider: University of Warwick
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Education
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 3
+edges:
+- tag: Timetabling
+  spec_file: university-of-warwick-timetabling-api-openapi.yml
+  capability_id: BC-4720.30
+  capability_id_l1: BC-4720
+  capability_name: Course Scheduling & Timetabling Records
+  confidence: 0.85
+  evidence: GET /module/{moduleCode}/timetable  retrieveModuleTimetable; GET /member/{universityId}/timetable  retrieveMemberTimetable  Retrieve
+    a personal timetable; GET /termdates  Retrieve term dates
+  reason: Operations return authoritative module and personal timetables plus academic term/week/holiday
+    calendars — course-section timetable records used downstream. Matches Course Scheduling & Timetabling
+    Records.
+- tag: OAI-PMH
+  spec_file: university-of-warwick-oai-pmh-api-openapi.yml
+  capability_id: BC-4780.40
+  capability_id_l1: BC-4780
+  capability_name: Scholarly Output & Publication Management
+  confidence: 0.78
+  evidence: WRAP (Warwick Research Archive Portal) is the University of Warwick's institutional repository
+    of research outputs ... exposes an OAI-PMH 2.0 interface for open metadata harvesting
+  reason: The surface exposes metadata about research outputs held in the institutional repository, including
+    RIOXX and OpenAIRE formats for UK REF and open-science aggregation — this is stewardship and dissemination
+    of scholarly output metadata. Some ambiguity as OAI-PMH is a generic harvesting protocol, but the
+    repository content is unambiguously research publications.
+- tag: Administration
+  spec_file: university-of-warwick-administration-api-openapi.yml
+  capability_id: BC-4700.40
+  capability_id_l1: BC-4700
+  capability_name: Programme Catalogue Management
+  confidence: 0.7
+  evidence: GET /department/{departmentCode}/modules  listDepartmentModules  List a department's modules;
+    GET /module  listModules  List all modules
+  reason: Read-only reference surface over the institution's departments and taught modules — i.e. the
+    published catalogue of courses/modules within Warwick's teaching administration system. Maps to Curriculum
+    & Programme Management, catalogue sub-capability; confidence held moderate because the operations
+    are pure lookups of organisational and module reference data rather than authoring/versioning a catalogue.
