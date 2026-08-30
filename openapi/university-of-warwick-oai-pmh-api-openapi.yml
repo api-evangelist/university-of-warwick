@@ -1,0 +1,196 @@
+openapi: 3.2.0
+info:
+  title: WRAP OAI PMH API
+  version: '2.0'
+  summary: OAI-PMH 2.0 metadata harvesting interface for the Warwick Research Archive Portal.
+  description: 'WRAP (Warwick Research Archive Portal) is the University of Warwick''s institutional repository of research outputs. It runs EPrints 3.4.5 on Warwick''s own infrastructure and exposes an OAI-PMH 2.0 interface for open metadata harvesting.
+
+
+    Verified live on 2026-08-19: `Identify` reports repositoryName "WRAP: Warwick Research Archive Portal", baseURL https://wrap.warwick.ac.uk/cgi/oai2, protocolVersion 2.0, earliestDatestamp 2010-11-19T12:47:24Z, deletedRecord "persistent", granularity YYYY-MM-DDThh:mm:ssZ. `ListMetadataFormats` returns seven formats and `ListSets` returns 312 sets.
+
+
+    Metadata formats offered: oai_dc, oai_bibl, rioxx (RIOXX 2.0, the UK research-outputs profile), oai_openaire (OpenAIRE 4.0), mets, didl and rdf. The rioxx and oai_openaire formats are the ones that matter for UK REF and European open-science aggregation.
+
+
+    Note that this endpoint is disallowed to general crawlers in https://wrap.warwick.ac.uk/robots.txt (`Disallow: /cgi/`) — it is published for harvesters that speak OAI-PMH, not for search-engine indexing.'
+  contact:
+    name: WRAP, University of Warwick
+    url: https://wrap.warwick.ac.uk/
+    email: wrap@warwick.ac.uk
+  license:
+    name: Warwick Research Publications policies
+    url: https://warwick.ac.uk/services/library/research-support/warwick-research-publications/warwick-research-publications-policies/
+servers:
+- url: https://wrap.warwick.ac.uk/cgi
+  description: Production
+security:
+- {}
+tags:
+- name: OAI-PMH
+  description: Open Archives Initiative Protocol for Metadata Harvesting, version 2.0.
+paths:
+  /oai2:
+    get:
+      tags:
+      - OAI-PMH
+      operationId: oaiPmhRequest
+      summary: OAI-PMH request
+      description: Single OAI-PMH 2.0 entry point. The `verb` parameter selects the operation. All six protocol verbs are supported; Identify, ListMetadataFormats and ListSets were probed unauthenticated on 2026-08-19 and each returned HTTP 200 with text/xml.
+      security:
+      - {}
+      parameters:
+      - name: verb
+        in: query
+        required: true
+        description: The OAI-PMH verb.
+        schema:
+          type: string
+          enum:
+          - Identify
+          - ListMetadataFormats
+          - ListSets
+          - ListIdentifiers
+          - ListRecords
+          - GetRecord
+      - name: metadataPrefix
+        in: query
+        required: false
+        description: Metadata format. Required for ListIdentifiers, ListRecords and GetRecord. Verified available on this repository via ListMetadataFormats.
+        schema:
+          type: string
+          enum:
+          - oai_dc
+          - oai_bibl
+          - rioxx
+          - oai_openaire
+          - mets
+          - didl
+          - rdf
+      - name: identifier
+        in: query
+        required: false
+        description: Record identifier. Required for GetRecord. The repository's sample identifier is `oai:wrap.warwick.ac.uk:3108`.
+        schema:
+          type: string
+      - name: set
+        in: query
+        required: false
+        description: Set to restrict the harvest to. 312 sets are published, grouped by Status, Subject, Division, Type and Year.
+        schema:
+          type: string
+      - name: from
+        in: query
+        required: false
+        description: Lower bound of the datestamp range. Granularity YYYY-MM-DDThh:mm:ssZ.
+        schema:
+          type: string
+      - name: until
+        in: query
+        required: false
+        description: Upper bound of the datestamp range. Granularity YYYY-MM-DDThh:mm:ssZ.
+        schema:
+          type: string
+      - name: resumptionToken
+        in: query
+        required: false
+        description: Flow-control token returned by a previous incomplete list response.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: An OAI-PMH envelope. Note that protocol-level failures (badVerb, cannotDisseminateFormat, idDoesNotExist, noRecordsMatch, badResumptionToken, badArgument, noSetHierarchy) are also returned with HTTP 200 and expressed as an `<error>` element inside the envelope — this is required by OAI-PMH, not a defect.
+          content:
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/OaiPmhEnvelope'
+components:
+  schemas:
+    MetadataFormat:
+      type: object
+      properties:
+        metadataPrefix:
+          type: string
+        schema:
+          type: string
+        metadataNamespace:
+          type: string
+    Identify:
+      type: object
+      properties:
+        repositoryName:
+          type: string
+          examples:
+          - 'WRAP: Warwick Research Archive Portal'
+        baseURL:
+          type: string
+          examples:
+          - https://wrap.warwick.ac.uk/cgi/oai2
+        protocolVersion:
+          type: string
+          examples:
+          - '2.0'
+        adminEmail:
+          type: string
+          examples:
+          - wrap@warwick.ac.uk
+        earliestDatestamp:
+          type: string
+          examples:
+          - '2010-11-19T12:47:24Z'
+        deletedRecord:
+          type: string
+          enum:
+          - false
+          - persistent
+          - transient
+        granularity:
+          type: string
+          examples:
+          - YYYY-MM-DDThh:mm:ssZ
+    OaiPmhEnvelope:
+      type: object
+      description: The OAI-PMH 2.0 root element, namespace http://www.openarchives.org/OAI/2.0/. Modelled structurally; the authoritative definition is the OAI-PMH XML Schema at http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd.
+      properties:
+        responseDate:
+          type: string
+          format: date-time
+        request:
+          type: string
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              enum:
+              - badArgument
+              - badResumptionToken
+              - badVerb
+              - cannotDisseminateFormat
+              - idDoesNotExist
+              - noRecordsMatch
+              - noMetadataFormats
+              - noSetHierarchy
+            message:
+              type: string
+        Identify:
+          $ref: '#/components/schemas/Identify'
+        ListMetadataFormats:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetadataFormat'
+        ListSets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Set'
+    Set:
+      type: object
+      properties:
+        setSpec:
+          type: string
+        setName:
+          type: string
+          examples:
+          - Status = Published
+externalDocs:
+  description: OAI-PMH 2.0 protocol specification
+  url: http://www.openarchives.org/OAI/openarchivesprotocol.html

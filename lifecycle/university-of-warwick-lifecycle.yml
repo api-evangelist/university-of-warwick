@@ -1,0 +1,89 @@
+generated: '2026-08-19'
+method: searched
+source: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
+x-operator: institution
+note: >-
+  Warwick publishes a real versioning commitment for Tabula, which is more than most of this
+  cohort manages. What it does not publish is any deprecation policy, changelog, status page or
+  sunset signalling — so a consumer can learn what "v1" promises but has no way to learn that
+  anything changed.
+versioning:
+  scheme: uri-path
+  current: v1
+  base: https://tabula.warwick.ac.uk/api/v1
+  in_path_versioning_of_operations: >-
+    Some Tabula operations are independently versioned within the v1 tree — the member profile
+    operations are documented as v2 forms (retrieve-member-v2, retrieve-multiple-members-v2,
+    search-for-members-v2) while still living under /api/v1. Operation-level and path-level
+    versions therefore do not agree.
+  policy_published: true
+  policy: >-
+    Quoted from Warwick's own documentation: "We aim to never release backwards-incompatible
+    changes to the Tabula API for the version requested. We may introduce more fields in the
+    output in the same version, but will never remove or change the format of existing fields."
+  policy_url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
+  additive_change_expected: true
+deprecation:
+  policy_published: false
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  detail: >-
+    No deprecation policy, no RFC 8594 Sunset or Deprecation headers, and no announced end-of-life
+    process for any Warwick API. The versioning promise implies old versions keep working but says
+    nothing about how or whether they are ever retired.
+change_communication:
+  changelog: false
+  release_notes: false
+  rss_or_atom: false
+  mailing_list: false
+  detail: >-
+    No changelog or release-notes surface was found for Tabula, Files.Warwick or the OAuth web
+    services. Warwick's IDG blog and internal update pages are behind Web Sign-on ("Restricted
+    permissions" in the site navigation), so even the internal change record is not public.
+status_and_operations:
+  status_page: false
+  uptime_history: false
+  detail: >-
+    No public status page for Tabula or any other Warwick API. Note that moodle.warwick.ac.uk
+    returned HTTP 500 when probed on 2026-08-19, with no status surface on which that would be
+    reported.
+support:
+  channels:
+    - name: ITS Web Team
+      contact: webteam@warwick.ac.uk
+      purpose: API access, External User account provisioning, OAuth application registration.
+    - name: Tabula team
+      contact: tabula@warwick.ac.uk
+      purpose: Tabula sandbox access.
+    - name: WRAP
+      contact: wrap@warwick.ac.uk
+      purpose: Institutional repository.
+    - name: CSIRT
+      contact: CSIIRT@warwick.ac.uk
+      purpose: Security disclosure, per /.well-known/security.txt.
+  public_issue_tracker: false
+  developer_community: false
+environments:
+  - name: production
+    url: https://tabula.warwick.ac.uk/api/v1
+  - name: sandbox
+    url: https://tabula-sandbox.warwick.ac.uk/api/v1
+    access: On request to tabula@warwick.ac.uk — not self-service.
+    detail: >-
+      Contains no staff data and auto-generated fake student data only. A genuine sandbox, which
+      is rare in this cohort, but gated behind an email request.
+gaps:
+  - No changelog or release notes.
+  - No deprecation policy or Sunset/Deprecation headers.
+  - No status page.
+  - No public issue tracker for the APIs.
+  - Sandbox access is not self-service.
+  - Operation-level v2 naming inside a v1 path is undocumented as a versioning strategy.
+x-evidence:
+  - url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
+    status: 200
+  - url: https://tabula-sandbox.warwick.ac.uk/
+    status: 200
+  - url: https://moodle.warwick.ac.uk/
+    status: 500

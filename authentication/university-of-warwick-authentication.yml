@@ -1,0 +1,112 @@
+generated: '2026-08-19'
+method: searched
+source: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
+docs: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/authentication
+x-operator: institution
+note: >-
+  Warwick operates its own central identity infrastructure — Web Sign-on (websignon.warwick.ac.uk)
+  and a Shibboleth SAML 2.0 identity provider (idp.warwick.ac.uk) — rather than delegating
+  authentication to a vendor platform. This is one of the few places where a university genuinely
+  IS the operator, and it is the most substantive part of Warwick's programmable surface.
+
+
+  Notable: Warwick still uses OAuth 1.0a, not OAuth 2.0, and there is no OpenID Connect discovery
+  document — https://warwick.ac.uk/.well-known/openid-configuration returns 404 (probed
+  2026-08-19). The OAuth surface is documented in prose only; no machine-readable discovery
+  document of any kind is published for it.
+summary:
+  types: [http, oauth1, saml]
+  oauth2: false
+  oidc: false
+  oidc_discovery_document: false
+  mtls: false
+schemes:
+  - name: basicAuth
+    type: http
+    scheme: basic
+    description: >-
+      HTTP Basic authentication over HTTPS against Warwick Web Sign-on, using an ITS user code
+      and password. Warwick documents that API requests SHOULD use a dedicated External User
+      account provisioned for API access via the ITS web team, not a personal staff or student
+      account.
+    applies_to:
+      - Tabula API (tabula.warwick.ac.uk/api)
+    sources:
+      - https://warwick.ac.uk/services/idg/services-support/web/tabula/api/authentication
+    evidence: >-
+      Probed https://tabula.warwick.ac.uk/api/v1/department unauthenticated on 2026-08-19 —
+      HTTP 401, body {"success":false,"status":"unauthorized","errors":[{"message":"API requests
+      must be authenticated with HTTP Basic Auth or OAuth"}]}.
+  - name: oauth1
+    type: oauth1
+    version: 1.0a
+    description: >-
+      Three-legged OAuth 1.0a issued by Warwick Web Sign-on. Request tokens are valid for five
+      minutes. Applications must be registered with the ITS Web Team before a token will be
+      issued. A Warwick-specific `scope` parameter — not part of the OAuth standard — names the
+      service being accessed, and multiple scopes are joined with `+` in a single parameter.
+    signature_algorithms: [RSA-SHA1, HMAC-SHA1]
+    signature_note: >-
+      RSA-SHA1 requires uploading a certificate at registration. HMAC-SHA1 requires no
+      certificate; Warwick generates and issues the consumer secret after registration.
+    endpoints:
+      request_token: https://websignon.warwick.ac.uk/oauth/requestToken
+      authorize: https://websignon.warwick.ac.uk/oauth/authorise
+      access_token: https://websignon.warwick.ac.uk/oauth/accessToken
+    parameter_locations:
+      - Authorization header (the `scope` parameter cannot be sent here)
+      - query string
+      - POST body
+    applies_to:
+      - Tabula API
+      - Sitebuilder
+      - Warwick Search
+      - Files.Warwick
+      - Warwick Blogs
+      - Warwick Forums
+      - Exam Timetabling
+      - Printer Credits
+      - Web Sign-on
+    sources:
+      - https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
+    scopes_artifact: scopes/university-of-warwick-oauth-scopes.yml
+  - name: shibboleth-saml
+    type: saml
+    version: SAML 2.0
+    description: >-
+      Warwick operates a Shibboleth identity provider as a member of the UK Access Management
+      Federation and, through it, eduGAIN. The SAML 2.0 metadata is published unauthenticated
+      and is machine-readable.
+    entity_id: https://idp.warwick.ac.uk/idp/shibboleth
+    metadata_url: https://idp.warwick.ac.uk/idp/shibboleth
+    scope: warwick.ac.uk
+    protocols_supported:
+      - urn:mace:shibboleth:1.0
+      - urn:oasis:names:tc:SAML:1.1:protocol
+      - urn:oasis:names:tc:SAML:2.0:protocol
+    entity_attributes:
+      assurance_certification: https://refeds.org/sirtfi
+      entity_category_support: http://refeds.org/category/research-and-scholarship
+    evidence: >-
+      Probed https://idp.warwick.ac.uk/idp/shibboleth on 2026-08-19 — HTTP 200,
+      application/xml, 7,843 bytes, root element <EntityDescriptor> with
+      entityID="https://idp.warwick.ac.uk/idp/shibboleth" and an IDPSSODescriptor.
+    sources:
+      - https://idp.warwick.ac.uk/idp/shibboleth
+public_surface:
+  note: >-
+    Three Tabula calendar endpoints require no authentication at all and were verified returning
+    live data unauthenticated on 2026-08-19: /api/v1/termdates, /api/v1/termdates/weeks and
+    /api/v1/holidaydates, each also available as iCalendar. WRAP's OAI-PMH endpoint is likewise
+    fully open. Everything else on Warwick's surface is credentialed.
+x-evidence:
+  - url: https://tabula.warwick.ac.uk/api/v1/termdates
+    status: 200
+  - url: https://tabula.warwick.ac.uk/api/v1/department
+    status: 401
+  - url: https://idp.warwick.ac.uk/idp/shibboleth
+    status: 200
+  - url: https://warwick.ac.uk/.well-known/openid-configuration
+    status: 404
+  - url: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
+    status: 200

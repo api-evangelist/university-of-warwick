@@ -1,0 +1,193 @@
+generated: '2026-08-19'
+method: probed
+source: >-
+  Live probes of Warwick-operated hosts on 2026-08-19, plus Warwick's own published
+  documentation. Every conformance below points at the exact location the evidence was read from.
+x-operator: institution
+regime: education
+note: >-
+  Probed against the Kin Score `education` regime standards list: scim, lti, oneroster, ed-fi,
+  caliper, qti, oai-pmh, shibboleth, saml, orcid, datacite, crossref. Reward-only — a standard is
+  recorded as conforming only where a machine-readable surface was fetched and read. Warwick hits
+  three of the twelve outright and one partially, which is unusually strong for this cohort: the
+  identity federation and the OAI-PMH repository are both genuinely institution-operated rather
+  than a vendor tenancy.
+standards:
+  - id: oai-pmh
+    conforms: true
+    version: '2.0'
+    location: https://wrap.warwick.ac.uk/cgi/oai2
+    evidence: >-
+      ?verb=Identify returned HTTP 200 text/xml with protocolVersion 2.0, repositoryName
+      "WRAP: Warwick Research Archive Portal", baseURL https://wrap.warwick.ac.uk/cgi/oai2,
+      repositoryIdentifier wrap.warwick.ac.uk, adminEmail wrap@warwick.ac.uk, earliestDatestamp
+      2010-11-19T12:47:24Z, deletedRecord persistent, granularity YYYY-MM-DDThh:mm:ssZ.
+      ?verb=ListMetadataFormats returned 7 formats; ?verb=ListSets returned 312 sets;
+      ?verb=ListRecords returned 268,407 bytes of records. Software is EPrints 3.4.5, self-hosted
+      on Warwick infrastructure (wrap.warwick.ac.uk -> coral-egret.lnx.warwick.ac.uk,
+      137.205.66.179).
+    artifact: openapi/university-of-warwick-wrap-oai-pmh-openapi.yml
+  - id: shibboleth
+    conforms: true
+    location: https://idp.warwick.ac.uk/idp/shibboleth
+    evidence: >-
+      HTTP 200, application/xml, 7,843 bytes. Shibboleth IdP metadata with
+      entityID="https://idp.warwick.ac.uk/idp/shibboleth", an IDPSSODescriptor declaring
+      protocolSupportEnumeration urn:mace:shibboleth:1.0, and a shibmd:Scope of warwick.ac.uk.
+      Carries the REFEDS SIRTFI assurance certification (https://refeds.org/sirtfi) and the
+      REFEDS Research and Scholarship entity category
+      (http://refeds.org/category/research-and-scholarship) as SAML entity attributes.
+  - id: saml
+    conforms: true
+    version: SAML 2.0
+    location: https://idp.warwick.ac.uk/idp/shibboleth
+    evidence: >-
+      The same metadata document is a SAML 2.0 <EntityDescriptor> in namespace
+      urn:oasis:names:tc:SAML:2.0:metadata, declaring support for
+      urn:oasis:names:tc:SAML:2.0:protocol and urn:oasis:names:tc:SAML:1.1:protocol, with
+      X509 key descriptors and SSO endpoint bindings. Machine-readable and unauthenticated.
+  - id: datacite
+    conforms: partial
+    version: kernel-4
+    location: https://wrap.warwick.ac.uk/cgi/oai2?verb=ListRecords&metadataPrefix=oai_openaire
+    evidence: >-
+      WRAP's oai_openaire records are built on the DataCite Metadata Schema — namespace
+      xmlns:datacite="http://datacite.org/schema/kernel-4" is declared and the records carry
+      datacite:identifier, datacite:creators, datacite:creatorName, datacite:titles,
+      datacite:title, datacite:date and datacite:rights elements. Partial because Warwick uses
+      the DataCite metadata schema for dissemination but no evidence was found that WRAP mints
+      DataCite DOIs of its own — the DOIs present in records are publisher-registered
+      (e.g. 10.1016/j.jebo.2008.09.008, Elsevier).
+  - id: orcid
+    conforms: false
+    evidence: >-
+      No ORCID identifiers found. Harvested the full rioxx and oai_openaire ListRecords
+      responses (268,407 and 194,976 bytes) on 2026-08-19 and searched case-insensitively for
+      "orcid" and for nameIdentifierScheme attributes — zero occurrences in either format.
+      Author names are carried as plain strings.
+  - id: crossref
+    conforms: false
+    evidence: >-
+      Crossref DOIs appear in WRAP records as references to publisher-registered identifiers,
+      but Warwick operates no Crossref deposit or query surface of its own. Referencing a DOI
+      is not conformance to Crossref.
+  - id: scim
+    conforms: false
+    evidence: >-
+      No SCIM surface found. Warwick's identity surface is SAML/Shibboleth for federation and
+      OAuth 1.0a for delegated API access; no /scim/v2 endpoint and no SCIM mention in the
+      Web Sign-on documentation.
+  - id: lti
+    conforms: false
+    evidence: >-
+      No LTI tool or platform registration surface published. Warwick runs a Moodle VLE at
+      moodle.warwick.ac.uk whose Moodle web service endpoint is live
+      (/webservice/rest/server.php returned HTTP 200 with a Moodle invalidtoken exception), and
+      Moodle supports LTI upstream — but no LTI configuration, registration or security contract
+      is published by Warwick, so there is nothing to read and nothing to credit.
+  - id: oneroster
+    conforms: false
+    evidence: No OneRoster endpoint or claim found on any Warwick host.
+  - id: ed-fi
+    conforms: false
+    evidence: >-
+      Not applicable in practice — Ed-Fi is a US K-12 data standard and Warwick is a UK
+      university. No surface found.
+  - id: caliper
+    conforms: false
+    evidence: No Caliper Analytics sensor or event store found or claimed.
+  - id: qti
+    conforms: false
+    evidence: No QTI assessment interchange surface found or claimed.
+additional_standards:
+  - id: rioxx
+    version: '2.0'
+    conforms: true
+    location: https://wrap.warwick.ac.uk/cgi/oai2?verb=ListRecords&metadataPrefix=rioxx
+    evidence: >-
+      Not in the education regime list, but material for a UK institution. WRAP disseminates
+      RIOXX 2.0 — the UK research-outputs metadata profile used for REF open-access compliance
+      — with rioxxterms:author, rioxxterms:project, rioxxterms:publication, rioxxterms:type,
+      rioxxterms:version and rioxxterms:apc elements, plus NISO ALI
+      (http://ali.niso.org/2014/ali/1.0) for licence and access rights.
+  - id: openaire
+    version: '4.0'
+    conforms: true
+    location: https://wrap.warwick.ac.uk/cgi/oai2?verb=ListRecords&metadataPrefix=oai_openaire
+    evidence: >-
+      oai_openaire metadata prefix declared in ListMetadataFormats against schema
+      https://www.openaire.eu/schema/repo-lit/4.0/openaire.xsd and returning live records.
+  - id: dublin-core
+    conforms: true
+    location: https://wrap.warwick.ac.uk/cgi/oai2?verb=ListRecords&metadataPrefix=oai_dc
+    evidence: oai_dc declared in ListMetadataFormats, the OAI-PMH mandatory baseline format.
+  - id: rfc5545-icalendar
+    conforms: true
+    location: https://tabula.warwick.ac.uk/api/v1/termdates.ics
+    evidence: >-
+      HTTP 200, text/calendar, 30,553 bytes on holidaydates.ics. Valid VCALENDAR with VERSION:2.0
+      and PRODID:-//Tabula//University of Warwick IT Services//EN. Served both by .ics extension
+      and by Accept: text/calendar content negotiation, and published for subscription over
+      webcal://.
+  - id: rfc9116-security-txt
+    conforms: true
+    location: https://warwick.ac.uk/.well-known/security.txt
+    evidence: >-
+      HTTP 200. Contact mailto:CSIIRT@warwick.ac.uk, Encryption
+      https://warwick.ac.uk/itss/war-csiirt.asc, Preferred-Languages en, Canonical present.
+      Expires 2026-08-27 — valid at time of probe but expiring within eight days, which is worth
+      flagging to the institution.
+  - id: llms-txt
+    conforms: true
+    location: https://warwick.ac.uk/llms.txt
+    evidence: >-
+      HTTP 200, text/plain, 1,992 bytes. A genuine AI access guide naming core user journeys and
+      priority content areas, and — unusually — documenting a real capability rather than only
+      listing links: it states that a `markdown` query parameter can be appended to any page URL
+      to render that page as concise Markdown. Verified: https://warwick.ac.uk/about?markdown
+      returns clean Markdown rather than HTML. The stated policy and the deployed behaviour agree.
+  - id: openapi
+    conforms: false
+    evidence: >-
+      Warwick publishes NO OpenAPI, AsyncAPI, JSON Schema, apis.json or Postman collection for
+      any of its APIs. The Tabula documentation is hand-written HTML. Both OpenAPI artifacts in
+      this repository are derived by API Evangelist from that documentation and from live probes —
+      they are ours, not Warwick's, and are marked method: derived / probed accordingly.
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: >-
+      Tabula uses a bespoke success/status/errors envelope, not application/problem+json.
+      See errors/university-of-warwick-problem-types.yml.
+  - id: oidc
+    conforms: false
+    evidence: https://warwick.ac.uk/.well-known/openid-configuration returned HTTP 404.
+  - id: oauth2
+    conforms: false
+    evidence: >-
+      Warwick's delegated authorization is OAuth 1.0a with RSA-SHA1/HMAC-SHA1 signing, not
+      OAuth 2.0. Documented at
+      https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/.
+summary:
+  regime_standards_total: 12
+  regime_standards_conforming: 3
+  regime_standards_partial: 1
+  additional_standards_conforming: 7
+x-evidence:
+  - url: https://wrap.warwick.ac.uk/cgi/oai2?verb=Identify
+    status: 200
+  - url: https://wrap.warwick.ac.uk/cgi/oai2?verb=ListMetadataFormats
+    status: 200
+  - url: https://wrap.warwick.ac.uk/cgi/oai2?verb=ListSets
+    status: 200
+  - url: https://idp.warwick.ac.uk/idp/shibboleth
+    status: 200
+  - url: https://warwick.ac.uk/llms.txt
+    status: 200
+  - url: https://warwick.ac.uk/.well-known/security.txt
+    status: 200
+  - url: https://warwick.ac.uk/.well-known/openid-configuration
+    status: 404
+  - url: https://tabula.warwick.ac.uk/api/v1/holidaydates.ics
+    status: 200
+  - url: https://moodle.warwick.ac.uk/webservice/rest/server.php
+    status: 200

@@ -1,0 +1,488 @@
+openapi: 3.2.0
+info:
+  title: Tabula Timetabling API
+  version: v1
+  summary: University of Warwick's teaching and learning administration API.
+  description: 'Tabula is the University of Warwick''s system for the administration of teaching and learning. It is built and operated by the University''s own Information and Digital Group (IDG) / IT Services software engineering team — the iCal responses it emits carry `PRODID:-//Tabula//University of Warwick IT Services//EN`, and the source repositories sit under the institution''s own GitHub organisation. This is an institution-operated contract, not a vendor platform running under Warwick''s name.
+
+
+    The API is resource-oriented, returns JSON in all responses including errors, and wraps every payload in a `success`/`status` envelope. A small number of calendar endpoints (term dates, term weeks, holiday dates) are fully public and require no credentials. Everything else is protected by Warwick Web Sign-on and requires either HTTP Basic Auth with an ITS External User account or an OAuth 1.0a token.
+
+
+    Content negotiation: the calendar endpoints return JSON by default and iCalendar when the request carries `Accept: text/calendar` or the path ends in `.ics`.'
+  termsOfService: https://warwick.ac.uk/terms/
+  contact:
+    name: University of Warwick ITS Web Team
+    url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
+    email: webteam@warwick.ac.uk
+  license:
+    name: Warwick website terms of use
+    url: https://warwick.ac.uk/terms/
+servers:
+- url: https://tabula.warwick.ac.uk/api/v1
+  description: Production
+- url: https://tabula-sandbox.warwick.ac.uk/api/v1
+  description: Sandbox. Contains no staff data and only auto-generated fake student data. Access is granted on request to tabula@warwick.ac.uk.
+security:
+- {}
+tags:
+- name: Timetabling
+  description: Term dates, term weeks, holiday dates, and module/member timetables.
+paths:
+  /termdates:
+    get:
+      tags:
+      - Timetabling
+      operationId: retrieveTermDates
+      summary: Retrieve term dates
+      description: Retrieve the list of term dates for the current academic year plus the previous and next years. Documented by Warwick as "This API is public" and verified unauthenticated (HTTP 200) on 2026-08-19.
+      security:
+      - {}
+      parameters:
+      - $ref: '#/components/parameters/AcceptCalendar'
+      responses:
+        '200':
+          description: Term dates.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TermDatesResponse'
+            text/calendar:
+              schema:
+                type: string
+                description: iCalendar (RFC 5545) document.
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /termdates.ics:
+    get:
+      tags:
+      - Timetabling
+      operationId: retrieveTermDatesIcal
+      summary: Retrieve term dates as iCalendar
+      description: Extension-driven form of the term dates endpoint. Verified unauthenticated (HTTP 200, text/calendar) on 2026-08-19.
+      security:
+      - {}
+      responses:
+        '200':
+          description: Term dates as an iCalendar document.
+          content:
+            text/calendar:
+              schema:
+                type: string
+  /termdates/{academicYear}:
+    get:
+      tags:
+      - Timetabling
+      operationId: retrieveTermDatesForYear
+      summary: Retrieve term dates for an academic year
+      security:
+      - {}
+      parameters:
+      - $ref: '#/components/parameters/AcademicYearPath'
+      - $ref: '#/components/parameters/AcceptCalendar'
+      responses:
+        '200':
+          description: Term dates for the requested academic year.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TermDatesResponse'
+            text/calendar:
+              schema:
+                type: string
+  /termdates/weeks:
+    get:
+      tags:
+      - Timetabling
+      operationId: retrieveTermWeeks
+      summary: Retrieve term weeks
+      description: Retrieve the list of term weeks for the current academic year. Documented public and verified unauthenticated (HTTP 200) on 2026-08-19.
+      security:
+      - {}
+      parameters:
+      - $ref: '#/components/parameters/NumberingSystem'
+      - $ref: '#/components/parameters/AcceptCalendar'
+      responses:
+        '200':
+          description: Term weeks.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TermWeeksResponse'
+            text/calendar:
+              schema:
+                type: string
+  /termdates/{academicYear}/weeks:
+    get:
+      tags:
+      - Timetabling
+      operationId: retrieveTermWeeksForYear
+      summary: Retrieve term weeks for an academic year
+      security:
+      - {}
+      parameters:
+      - $ref: '#/components/parameters/AcademicYearPath'
+      - $ref: '#/components/parameters/NumberingSystem'
+      responses:
+        '200':
+          description: Term weeks for the requested academic year.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TermWeeksResponse'
+  /holidaydates:
+    get:
+      tags:
+      - Timetabling
+      operationId: retrieveHolidayDates
+      summary: Retrieve holiday dates
+      description: Retrieve statutory and customary University holiday dates. Documented public and verified unauthenticated (HTTP 200, 199 dates) on 2026-08-19.
+      security:
+      - {}
+      parameters:
+      - $ref: '#/components/parameters/AcceptCalendar'
+      responses:
+        '200':
+          description: Holiday dates.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HolidayDatesResponse'
+            text/calendar:
+              schema:
+                type: string
+  /holidaydates.ics:
+    get:
+      tags:
+      - Timetabling
+      operationId: retrieveHolidayDatesIcal
+      summary: Retrieve holiday dates as iCalendar
+      description: Verified unauthenticated (HTTP 200, text/calendar) on 2026-08-19. Also published for calendar subscription as `webcal://tabula.warwick.ac.uk/api/v1/holidaydates.ics`.
+      security:
+      - {}
+      responses:
+        '200':
+          description: Holiday dates as an iCalendar document.
+          content:
+            text/calendar:
+              schema:
+                type: string
+  /module/{moduleCode}/timetable:
+    get:
+      tags:
+      - Timetabling
+      operationId: retrieveModuleTimetable
+      summary: Retrieve a module timetable
+      description: All scheduled timetable events assigned to the module. Sourced from Syllabus+. Requires `Permissions.Module.ViewTimetable`, which all signed-in users hold on all modules by default.
+      security:
+      - basicAuth: []
+      - oauth1: []
+      parameters:
+      - $ref: '#/components/parameters/ModuleCode'
+      - $ref: '#/components/parameters/AcademicYearQuery'
+      responses:
+        '200':
+          description: The module's timetable events.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimetableEventsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /module/{moduleCode}/timetable/events:
+    get:
+      tags:
+      - Timetabling
+      operationId: retrieveModuleTimetableEvents
+      summary: Retrieve a module's timetable events between two dates
+      security:
+      - basicAuth: []
+      - oauth1: []
+      parameters:
+      - $ref: '#/components/parameters/ModuleCode'
+      - $ref: '#/components/parameters/AcademicYearQuery'
+      - name: start
+        in: query
+        required: false
+        description: Start date, formatted dd-MMM-yyyy (e.g. 01-Dec-2015).
+        schema:
+          type: string
+      - name: end
+        in: query
+        required: false
+        description: End date, formatted dd-MMM-yyyy (e.g. 01-Dec-2015).
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Timetable events in the requested window.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimetableEventsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /member/{universityId}/timetable:
+    get:
+      tags:
+      - Timetabling
+      operationId: retrieveMemberTimetable
+      summary: Retrieve a personal timetable
+      description: All scheduled timetable events in a person's timetable for the current year. Does not include one-off events such as personal tutor meetings. Requires `Permissions.Profiles.Read.Timetable` on the member.
+      security:
+      - basicAuth: []
+      - oauth1: []
+      parameters:
+      - $ref: '#/components/parameters/UniversityId'
+      - $ref: '#/components/parameters/AcademicYearQuery'
+      responses:
+        '200':
+          description: The member's timetable events.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimetableEventsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+components:
+  schemas:
+    Week:
+      type: object
+      properties:
+        name:
+          type: string
+          examples:
+          - Term 1, week 1
+        academicYear:
+          type: string
+        weekNumber:
+          type: integer
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+    TimetableEvent:
+      type: object
+      description: Shape summarised from Warwick's "The Timetable Event object" reference page. Sourced from Syllabus+.
+      properties:
+        name:
+          type: string
+        title:
+          type: string
+        eventType:
+          type: string
+        location:
+          type: string
+        moduleCode:
+          type: string
+        weekRanges:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeekRange'
+        day:
+          type: string
+        startTime:
+          type: string
+        endTime:
+          type: string
+    TermWeeksResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - weeks
+        properties:
+          weeks:
+            type: array
+            items:
+              $ref: '#/components/schemas/Week'
+    TimetableEventsResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        properties:
+          events:
+            type: array
+            items:
+              $ref: '#/components/schemas/TimetableEvent'
+    TermDatesResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - terms
+        properties:
+          terms:
+            type: array
+            items:
+              $ref: '#/components/schemas/Term'
+    Envelope:
+      type: object
+      description: Every Tabula response carries this envelope.
+      required:
+      - success
+      - status
+      properties:
+        success:
+          type: boolean
+        status:
+          type: string
+    WeekRange:
+      type: object
+      properties:
+        minWeek:
+          type: integer
+        maxWeek:
+          type: integer
+    ErrorResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - errors
+        properties:
+          success:
+            const: false
+          errors:
+            type: array
+            items:
+              type: object
+              required:
+              - message
+              properties:
+                message:
+                  type: string
+    Term:
+      type: object
+      properties:
+        name:
+          type: string
+          examples:
+          - Autumn
+        weekRange:
+          $ref: '#/components/schemas/WeekRange'
+        academicYear:
+          type: string
+          examples:
+          - 25/26
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+    HolidayDatesResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - dates
+        properties:
+          dates:
+            type: array
+            description: Holiday dates in ISO date format.
+            items:
+              type: string
+              format: date
+  responses:
+    ServerError:
+      description: Something went wrong on the Tabula end.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: HTTP authentication failed or was not supplied.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            status: unauthorized
+            errors:
+            - message: API requests must be authenticated with HTTP Basic Auth or OAuth
+    Forbidden:
+      description: Authenticated successfully but lacking permission for this request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  parameters:
+    AcceptCalendar:
+      name: Accept
+      in: header
+      required: false
+      description: Send `text/calendar` to receive iCalendar instead of JSON.
+      schema:
+        type: string
+        enum:
+        - application/json
+        - text/calendar
+    AcademicYearQuery:
+      name: academicYear
+      in: query
+      required: false
+      description: The academic year in yy/yy form, e.g. `13/14`. Defaults to the current SITS academic year.
+      schema:
+        type: string
+      example: 25/26
+    NumberingSystem:
+      name: numberingSystem
+      in: query
+      required: false
+      description: Week naming system. `academic` runs 1–52 through the year; `term` restarts at each term; `cumulative` continues across terms; `none` always uses dates.
+      schema:
+        type: string
+        enum:
+        - academic
+        - term
+        - cumulative
+        - none
+        default: academic
+    AcademicYearPath:
+      name: academicYear
+      in: path
+      required: true
+      description: The academic year as a 4-digit start year — for 13/14 use `2013`. Defaults to the current academic year, which starts on 1 August.
+      schema:
+        type: string
+        pattern: ^[0-9]{4}$
+      example: '2025'
+    UniversityId:
+      name: universityId
+      in: path
+      required: true
+      description: The 7-digit University ID of the member. The special value `me` requests the currently authenticated user.
+      schema:
+        type: string
+      example: me
+    ModuleCode:
+      name: moduleCode
+      in: path
+      required: true
+      description: The lowercase module code, e.g. `cs118`.
+      schema:
+        type: string
+      example: cs118
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication over HTTPS using a Warwick Web Sign-on ITS user code and password. Warwick documents that requests SHOULD use a dedicated External User account provisioned for API access.
+    oauth1:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: OAuth 1.0a. Warwick supports the RSA-SHA1 and HMAC-SHA1 signature algorithms and requires a Warwick-specific `scope` parameter naming the service being accessed. Request token, authorise and access token endpoints are on websignon.warwick.ac.uk. OpenAPI has no native OAuth 1.0a security scheme type, so this is expressed as the Authorization header it actually travels in.
+externalDocs:
+  description: Tabula API documentation
+  url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/

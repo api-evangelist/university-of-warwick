@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/university-of-warwick/main/json-schema/university-of-warwick-tabula-termdates.json",
+  "title": "Tabula Term Dates Response",
+  "description": "Response envelope for GET https://tabula.warwick.ac.uk/api/v1/termdates. Derived from the live response captured unauthenticated on 2026-08-19, cross-checked against Warwick's own documentation.",
+  "x-generated": "2026-08-19",
+  "x-method": "derived",
+  "x-source": "examples/university-of-warwick-tabula-termdates.json",
+  "x-operator": "institution",
+  "type": "object",
+  "required": ["success", "status", "terms"],
+  "additionalProperties": false,
+  "properties": {
+    "success": { "type": "boolean", "const": true },
+    "status": { "type": "string", "const": "ok" },
+    "terms": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/term" }
+    }
+  },
+  "$defs": {
+    "term": {
+      "type": "object",
+      "required": ["name", "weekRange", "academicYear", "start", "end"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Term or vacation name.",
+          "examples": ["Pre-term vacation", "Autumn", "Christmas vacation", "Spring"]
+        },
+        "weekRange": {
+          "type": "object",
+          "required": ["minWeek", "maxWeek"],
+          "additionalProperties": false,
+          "properties": {
+            "minWeek": {
+              "type": "integer",
+              "description": "First week number. Negative for pre-term vacation, which runs from week -9."
+            },
+            "maxWeek": { "type": "integer" }
+          }
+        },
+        "academicYear": {
+          "type": "string",
+          "pattern": "^[0-9]{2}/[0-9]{2}$",
+          "examples": ["25/26"]
+        },
+        "start": { "type": "string", "format": "date" },
+        "end": { "type": "string", "format": "date" }
+      }
+    }
+  }
+}

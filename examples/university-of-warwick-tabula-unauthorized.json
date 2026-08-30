@@ -1,0 +1,17 @@
+{
+  "x-generated": "2026-08-19",
+  "x-method": "probed",
+  "x-operator": "institution",
+  "x-source": "https://tabula.warwick.ac.uk/api/v1/department",
+  "x-status": 401,
+  "x-note": "The documented error envelope, captured verbatim. Every gated Tabula path returns this exact body unauthenticated, which is how the routes were confirmed to exist without credentials.",
+  "example": {
+    "success": false,
+    "status": "unauthorized",
+    "errors": [
+      {
+        "message": "API requests must be authenticated with HTTP Basic Auth or OAuth"
+      }
+    ]
+  }
+}

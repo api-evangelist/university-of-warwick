@@ -1,0 +1,244 @@
+openapi: 3.2.0
+info:
+  title: Tabula Administration API
+  version: v1
+  summary: University of Warwick's teaching and learning administration API.
+  description: 'Tabula is the University of Warwick''s system for the administration of teaching and learning. It is built and operated by the University''s own Information and Digital Group (IDG) / IT Services software engineering team — the iCal responses it emits carry `PRODID:-//Tabula//University of Warwick IT Services//EN`, and the source repositories sit under the institution''s own GitHub organisation. This is an institution-operated contract, not a vendor platform running under Warwick''s name.
+
+
+    The API is resource-oriented, returns JSON in all responses including errors, and wraps every payload in a `success`/`status` envelope. A small number of calendar endpoints (term dates, term weeks, holiday dates) are fully public and require no credentials. Everything else is protected by Warwick Web Sign-on and requires either HTTP Basic Auth with an ITS External User account or an OAuth 1.0a token.
+
+
+    Content negotiation: the calendar endpoints return JSON by default and iCalendar when the request carries `Accept: text/calendar` or the path ends in `.ics`.'
+  termsOfService: https://warwick.ac.uk/terms/
+  contact:
+    name: University of Warwick ITS Web Team
+    url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
+    email: webteam@warwick.ac.uk
+  license:
+    name: Warwick website terms of use
+    url: https://warwick.ac.uk/terms/
+servers:
+- url: https://tabula.warwick.ac.uk/api/v1
+  description: Production
+- url: https://tabula-sandbox.warwick.ac.uk/api/v1
+  description: Sandbox. Contains no staff data and only auto-generated fake student data. Access is granted on request to tabula@warwick.ac.uk.
+security:
+- {}
+tags:
+- name: Administration
+  description: Departments and modules.
+paths:
+  /department:
+    get:
+      tags:
+      - Administration
+      operationId: listDepartments
+      summary: List all departments
+      description: Lists all departments in Tabula. Warwick documents the information itself as public but states the API "must be called by an authenticated user". Probed unauthenticated on 2026-08-19 and returned the documented 401 envelope.
+      security:
+      - basicAuth: []
+      - oauth1: []
+      responses:
+        '200':
+          description: All departments. `subDepartments` is not returned by this operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartmentsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /department/{departmentCode}:
+    get:
+      tags:
+      - Administration
+      operationId: retrieveDepartment
+      summary: Retrieve a department
+      security:
+      - basicAuth: []
+      - oauth1: []
+      parameters:
+      - $ref: '#/components/parameters/DepartmentCode'
+      responses:
+        '200':
+          description: The department.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartmentResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /department/{departmentCode}/modules:
+    get:
+      tags:
+      - Administration
+      operationId: listDepartmentModules
+      summary: List a department's modules
+      security:
+      - basicAuth: []
+      - oauth1: []
+      parameters:
+      - $ref: '#/components/parameters/DepartmentCode'
+      responses:
+        '200':
+          description: The department's modules.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModulesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /module:
+    get:
+      tags:
+      - Administration
+      operationId: listModules
+      summary: List all modules
+      security:
+      - basicAuth: []
+      - oauth1: []
+      responses:
+        '200':
+          description: All modules in the system.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModulesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  schemas:
+    ModulesResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - modules
+        properties:
+          modules:
+            type: array
+            items:
+              $ref: '#/components/schemas/Module'
+    Module:
+      type: object
+      properties:
+        code:
+          type: string
+          examples:
+          - cs118
+        name:
+          type: string
+        adminDepartment:
+          $ref: '#/components/schemas/Department'
+    ErrorResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - errors
+        properties:
+          success:
+            const: false
+          errors:
+            type: array
+            items:
+              type: object
+              required:
+              - message
+              properties:
+                message:
+                  type: string
+    DepartmentsResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - departments
+        properties:
+          departments:
+            type: array
+            items:
+              $ref: '#/components/schemas/Department'
+    DepartmentResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - department
+        properties:
+          department:
+            $ref: '#/components/schemas/Department'
+    Department:
+      type: object
+      description: Shape summarised from Warwick's "The Department object" reference page. Field-level detail beyond code/name/subDepartments is behind the authenticated surface and is deliberately not asserted here.
+      properties:
+        code:
+          type: string
+          examples:
+          - cs
+        name:
+          type: string
+          examples:
+          - Computer Science
+        subDepartments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Department'
+    Envelope:
+      type: object
+      description: Every Tabula response carries this envelope.
+      required:
+      - success
+      - status
+      properties:
+        success:
+          type: boolean
+        status:
+          type: string
+  parameters:
+    DepartmentCode:
+      name: departmentCode
+      in: path
+      required: true
+      description: The lowercase department code, e.g. `cs`.
+      schema:
+        type: string
+      example: cs
+  responses:
+    Unauthorized:
+      description: HTTP authentication failed or was not supplied.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            status: unauthorized
+            errors:
+            - message: API requests must be authenticated with HTTP Basic Auth or OAuth
+    NotFound:
+      description: The resource does not exist. Warwick documents that this can also occur when the request Content-Type is not application/json.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            status: not_found
+            errors:
+            - message: We don't know anything about this page
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic authentication over HTTPS using a Warwick Web Sign-on ITS user code and password. Warwick documents that requests SHOULD use a dedicated External User account provisioned for API access.
+    oauth1:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: OAuth 1.0a. Warwick supports the RSA-SHA1 and HMAC-SHA1 signature algorithms and requires a Warwick-specific `scope` parameter naming the service being accessed. Request token, authorise and access token endpoints are on websignon.warwick.ac.uk. OpenAPI has no native OAuth 1.0a security scheme type, so this is expressed as the Authorization header it actually travels in.
+externalDocs:
+  description: Tabula API documentation
+  url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/

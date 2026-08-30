@@ -1,0 +1,89 @@
+generated: '2026-08-19'
+method: searched
+source: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/errors
+x-operator: institution
+format: tabula-envelope
+rfc9457: false
+note: >-
+  Tabula does NOT use RFC 9457 application/problem+json. It uses a consistent bespoke envelope —
+  `success` false, a `status` slug, and an `errors` array of objects each carrying a `message`.
+  The envelope is applied uniformly: Warwick documents that JSON is returned in all responses
+  including errors, and the live 401 and 404 bodies captured on 2026-08-19 both match it exactly.
+
+
+  The envelope is well-formed and machine-parseable but the `status` slug vocabulary is not
+  published anywhere as a closed list, and error responses carry no error code, no type URI and
+  no correlation identifier. There is no documented retry guidance and no Retry-After.
+envelope:
+  content_type: application/json
+  schema: json-schema/university-of-warwick-tabula-error.json
+  example:
+    success: false
+    status: unauthorized
+    errors:
+      - message: API requests must be authenticated with HTTP Basic Auth or OAuth
+status_codes:
+  - status: 200
+    meaning: Everything worked as expected.
+    retryable: false
+  - status: 400
+    meaning: Bad request — usually a missing or malformed parameter.
+    retryable: false
+  - status: 401
+    meaning: HTTP authentication failed or was not supplied.
+    retryable: false
+    observed: true
+    observed_body: '{"success":false,"status":"unauthorized","errors":[{"message":"API requests must be authenticated with HTTP Basic Auth or OAuth"}]}'
+  - status: 402
+    meaning: Request Failed — parameters were valid but the request failed.
+    retryable: false
+    note: >-
+      Warwick documents 402 with this meaning. That is an unusual reuse of a status code the
+      IETF reserves for payment, and it is worth flagging for any client author.
+  - status: 403
+    meaning: The user authenticated successfully but lacks permission for the request.
+    retryable: false
+  - status: 404
+    meaning: >-
+      The resource does not exist. Warwick documents that this ALSO occurs when the request
+      Content-Type is not application/json — a 404 here does not reliably mean "no such route".
+    retryable: false
+    observed: true
+    observed_body: '{"success":false,"status":"not_found","errors":[{"message":"We don''t know anything about this page"}]}'
+  - status: 500
+    meaning: Server error on the Tabula end.
+    retryable: true
+  - status: 502
+    meaning: Server error on the Tabula end.
+    retryable: true
+  - status: 503
+    meaning: Server error on the Tabula end.
+    retryable: true
+  - status: 504
+    meaning: Server error on the Tabula end.
+    retryable: true
+gaps:
+  - No RFC 9457 problem+json.
+  - No stable error code vocabulary published; only free-text messages.
+  - No correlation or request identifier in error bodies.
+  - No Retry-After or documented backoff guidance.
+  - >-
+    OAI-PMH errors on WRAP are returned with HTTP 200 and an <error> element inside the
+    envelope. That is mandated by the OAI-PMH specification, not a defect, but any generic HTTP
+    client will read those responses as successes.
+rate_limiting:
+  documented_headers: false
+  policy: >-
+    Warwick publishes no rate-limit headers and no numeric quota. Its stated policy is manual and
+    blunt: "We monitor the server load more or less continuously, and will block IP addresses
+    from clients which are causing problems on a 'block-first, ask questions later' basis."
+    Clients are asked to put a name or email address in the User-Agent so Warwick can identify
+    them before blocking.
+  source: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
+x-evidence:
+  - url: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/errors
+    status: 200
+  - url: https://tabula.warwick.ac.uk/api/v1/department
+    status: 401
+  - url: https://tabula.warwick.ac.uk/api/v1
+    status: 404

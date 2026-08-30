@@ -1,0 +1,76 @@
+generated: '2026-08-19'
+method: searched
+source: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
+x-operator: institution
+note: >-
+  These scope strings are read verbatim from Warwick's own published OAuth scopes table. Warwick
+  states the list is non-exhaustive and that not all APIs for each service are available through
+  OAuth. The scope values are Warwick's; the descriptions are ours.
+
+
+  The `scope` parameter is Warwick-specific and is NOT defined in the OAuth 1.0a standard. It
+  cannot be sent in the Authorization header — it must go in the query string or the POST body.
+  Multiple scopes are joined with a `+` and passed as a single parameter.
+
+
+  There is no machine-readable discovery document for these scopes. They exist only as an HTML
+  table on the documentation page, which is why this artifact is `searched` rather than `probed`.
+schemes:
+  - name: warwick-websignon-oauth1
+    source: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
+    version: OAuth 1.0a
+    signature_algorithms: [RSA-SHA1, HMAC-SHA1]
+    flows:
+      - flow: threeLegged
+        requestTokenUrl: https://websignon.warwick.ac.uk/oauth/requestToken
+        authorizationUrl: https://websignon.warwick.ac.uk/oauth/authorise
+        accessTokenUrl: https://websignon.warwick.ac.uk/oauth/accessToken
+scopes:
+  - scope: urn:www2.warwick.ac.uk:sitebuilder2:read:service
+    service: Sitebuilder
+    description: Read access to Sitebuilder, Warwick's own institutional web content management system.
+    flows: [threeLegged]
+  - scope: urn:sitebuilder.warwick.ac.uk:sitebuilder2:edit:service
+    service: Sitebuilder
+    description: Edit access to Sitebuilder pages and content.
+    flows: [threeLegged]
+  - scope: urn:search.warwick.ac.uk:search:service
+    service: Warwick Search
+    description: Access to Warwick Search, the institution's own site and people search service.
+    flows: [threeLegged]
+  - scope: urn:files.warwick.ac.uk:files:service
+    service: Files.Warwick
+    description: Access to the Files.Warwick file storage service on the user's behalf.
+    flows: [threeLegged]
+  - scope: urn:blogs.warwick.ac.uk:blogbuilder:service
+    service: Warwick Blogs
+    description: Access to Warwick Blogs (BlogBuilder), the institution's own blogging platform.
+    flows: [threeLegged]
+  - scope: urn:forums.warwick.ac.uk:forums:service
+    service: Warwick Forums
+    description: Access to Warwick Forums on the user's behalf.
+    flows: [threeLegged]
+  - scope: urn:examtimetable.warwick.ac.uk:examtimetable:service
+    service: Exam Timetabling
+    description: Access to the user's exam timetable.
+    flows: [threeLegged]
+  - scope: urn:printercredits.warwick.ac.uk:printcredit:service
+    service: Printer Credits
+    description: Access to the user's campus printing credit balance.
+    flows: [threeLegged]
+  - scope: urn:websignon.warwick.ac.uk:sso:service
+    service: Web Sign-on
+    description: Access to the user's Web Sign-on identity attributes.
+    flows: [threeLegged]
+coverage:
+  scopes_total: 9
+  documented_by_provider: true
+  machine_readable: false
+  exhaustive: false
+  note: >-
+    Warwick explicitly labels its own table non-exhaustive. Further detail on retrieving user
+    information from Web Sign-on sits behind an access-restricted page open only to University
+    members and registered Web Sign-on developers, so the public scope inventory stops here.
+x-evidence:
+  - url: https://warwick.ac.uk/services/its/servicessupport/web/sign-on/help/oauth/apis/
+    status: 200
