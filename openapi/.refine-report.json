@@ -1,0 +1,28 @@
+{
+  "provider": "university-of-warwick",
+  "sources": [
+    "_original/university-of-warwick-tabula-openapi.yml",
+    "_original/university-of-warwick-wrap-oai-pmh-openapi.yml"
+  ],
+  "outputs": [
+    "university-of-warwick-administration-api-openapi.yml",
+    "university-of-warwick-jobs-api-openapi.yml",
+    "university-of-warwick-timetabling-api-openapi.yml",
+    "university-of-warwick-oai-pmh-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "university-of-warwick-tabula-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "university-of-warwick-wrap-oai-pmh-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "university-of-warwick-administration-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "university-of-warwick-jobs-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "university-of-warwick-oai-pmh-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "university-of-warwick-timetabling-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

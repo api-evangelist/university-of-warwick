@@ -3,16 +3,7 @@ info:
   title: WRAP OAI PMH API
   version: '2.0'
   summary: OAI-PMH 2.0 metadata harvesting interface for the Warwick Research Archive Portal.
-  description: 'WRAP (Warwick Research Archive Portal) is the University of Warwick''s institutional repository of research outputs. It runs EPrints 3.4.5 on Warwick''s own infrastructure and exposes an OAI-PMH 2.0 interface for open metadata harvesting.
-
-
-    Verified live on 2026-08-19: `Identify` reports repositoryName "WRAP: Warwick Research Archive Portal", baseURL https://wrap.warwick.ac.uk/cgi/oai2, protocolVersion 2.0, earliestDatestamp 2010-11-19T12:47:24Z, deletedRecord "persistent", granularity YYYY-MM-DDThh:mm:ssZ. `ListMetadataFormats` returns seven formats and `ListSets` returns 312 sets.
-
-
-    Metadata formats offered: oai_dc, oai_bibl, rioxx (RIOXX 2.0, the UK research-outputs profile), oai_openaire (OpenAIRE 4.0), mets, didl and rdf. The rioxx and oai_openaire formats are the ones that matter for UK REF and European open-science aggregation.
-
-
-    Note that this endpoint is disallowed to general crawlers in https://wrap.warwick.ac.uk/robots.txt (`Disallow: /cgi/`) — it is published for harvesters that speak OAI-PMH, not for search-engine indexing.'
+  description: WRAP (Warwick Research Archive Portal) is the University of Warwick's institutional repository of research outputs.
   contact:
     name: WRAP, University of Warwick
     url: https://wrap.warwick.ac.uk/
@@ -26,13 +17,13 @@ servers:
 security:
 - {}
 tags:
-- name: OAI-PMH
+- name: oai pmh
   description: Open Archives Initiative Protocol for Metadata Harvesting, version 2.0.
 paths:
   /oai2:
     get:
       tags:
-      - OAI-PMH
+      - oai pmh
       operationId: oaiPmhRequest
       summary: OAI-PMH request
       description: Single OAI-PMH 2.0 entry point. The `verb` parameter selects the operation. All six protocol verbs are supported; Identify, ListMetadataFormats and ListSets were probed unauthenticated on 2026-08-19 and each returned HTTP 200 with text/xml.
@@ -105,15 +96,15 @@ paths:
                 $ref: '#/components/schemas/OaiPmhEnvelope'
 components:
   schemas:
-    MetadataFormat:
+    Set:
       type: object
       properties:
-        metadataPrefix:
+        setSpec:
           type: string
-        schema:
+        setName:
           type: string
-        metadataNamespace:
-          type: string
+          examples:
+          - Status = Published
     Identify:
       type: object
       properties:
@@ -182,15 +173,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Set'
-    Set:
+    MetadataFormat:
       type: object
       properties:
-        setSpec:
+        metadataPrefix:
           type: string
-        setName:
+        schema:
           type: string
-          examples:
-          - Status = Published
+        metadataNamespace:
+          type: string
 externalDocs:
   description: OAI-PMH 2.0 protocol specification
   url: http://www.openarchives.org/OAI/openarchivesprotocol.html

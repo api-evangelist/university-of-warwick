@@ -1,0 +1,34 @@
+# generated: 2026-08-19 | method: probed | x-operator: institution
+# source: https://tabula.warwick.ac.uk/api/v1/termdates.ics | status: 200 text/calendar
+# Verbatim head of the live iCalendar response, captured unauthenticated on 2026-08-19.
+# PRODID names the operator directly: University of Warwick IT Services.
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Tabula//University of Warwick IT Services//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-PUBLISHED-TTL:PT1W
+X-WR-CALNAME:Term dates - 2025-2028
+BEGIN:VEVENT
+DTSTAMP:20260819T221330Z
+DTSTART;VALUE=DATE:20250801
+DTEND;VALUE=DATE:20251006
+SUMMARY:Pre-term vacation
+UID:2025-term-0
+METHOD:PUBLISH
+TRANSP:OPAQUE
+ORGANIZER:MAILTO:no-reply@tabula.warwick.ac.uk
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20260819T221330Z
+DTSTART;VALUE=DATE:20251006
+DTEND;VALUE=DATE:20251215
+SUMMARY:Autumn
+UID:2025-term-1
+METHOD:PUBLISH
+TRANSP:OPAQUE
+ORGANIZER:MAILTO:no-reply@tabula.warwick.ac.uk
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+END:VEVENT
+BEGIN:VEVENT

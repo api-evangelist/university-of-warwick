@@ -3,13 +3,7 @@ info:
   title: Tabula Jobs API
   version: v1
   summary: University of Warwick's teaching and learning administration API.
-  description: 'Tabula is the University of Warwick''s system for the administration of teaching and learning. It is built and operated by the University''s own Information and Digital Group (IDG) / IT Services software engineering team — the iCal responses it emits carry `PRODID:-//Tabula//University of Warwick IT Services//EN`, and the source repositories sit under the institution''s own GitHub organisation. This is an institution-operated contract, not a vendor platform running under Warwick''s name.
-
-
-    The API is resource-oriented, returns JSON in all responses including errors, and wraps every payload in a `success`/`status` envelope. A small number of calendar endpoints (term dates, term weeks, holiday dates) are fully public and require no credentials. Everything else is protected by Warwick Web Sign-on and requires either HTTP Basic Auth with an ITS External User account or an OAuth 1.0a token.
-
-
-    Content negotiation: the calendar endpoints return JSON by default and iCalendar when the request carries `Accept: text/calendar` or the path ends in `.ics`.'
+  description: Tabula is the University of Warwick's system for the administration of teaching and learning.
   termsOfService: https://warwick.ac.uk/terms/
   contact:
     name: University of Warwick ITS Web Team
@@ -59,6 +53,22 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
+    JobResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        properties:
+          job:
+            type: object
+            properties:
+              id:
+                type: string
+              status:
+                type: string
+              succeeded:
+                type: boolean
+              progress:
+                type: integer
     ErrorResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -77,22 +87,6 @@ components:
               properties:
                 message:
                   type: string
-    JobResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        properties:
-          job:
-            type: object
-            properties:
-              id:
-                type: string
-              status:
-                type: string
-              succeeded:
-                type: boolean
-              progress:
-                type: integer
     Envelope:
       type: object
       description: Every Tabula response carries this envelope.
@@ -105,17 +99,6 @@ components:
         status:
           type: string
   responses:
-    Unauthorized:
-      description: HTTP authentication failed or was not supplied.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            success: false
-            status: unauthorized
-            errors:
-            - message: API requests must be authenticated with HTTP Basic Auth or OAuth
     NotFound:
       description: The resource does not exist. Warwick documents that this can also occur when the request Content-Type is not application/json.
       content:
@@ -127,6 +110,17 @@ components:
             status: not_found
             errors:
             - message: We don't know anything about this page
+    Unauthorized:
+      description: HTTP authentication failed or was not supplied.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            status: unauthorized
+            errors:
+            - message: API requests must be authenticated with HTTP Basic Auth or OAuth
   securitySchemes:
     basicAuth:
       type: http

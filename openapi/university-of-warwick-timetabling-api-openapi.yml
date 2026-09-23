@@ -3,13 +3,7 @@ info:
   title: Tabula Timetabling API
   version: v1
   summary: University of Warwick's teaching and learning administration API.
-  description: 'Tabula is the University of Warwick''s system for the administration of teaching and learning. It is built and operated by the University''s own Information and Digital Group (IDG) / IT Services software engineering team — the iCal responses it emits carry `PRODID:-//Tabula//University of Warwick IT Services//EN`, and the source repositories sit under the institution''s own GitHub organisation. This is an institution-operated contract, not a vendor platform running under Warwick''s name.
-
-
-    The API is resource-oriented, returns JSON in all responses including errors, and wraps every payload in a `success`/`status` envelope. A small number of calendar endpoints (term dates, term weeks, holiday dates) are fully public and require no credentials. Everything else is protected by Warwick Web Sign-on and requires either HTTP Basic Auth with an ITS External User account or an OAuth 1.0a token.
-
-
-    Content negotiation: the calendar endpoints return JSON by default and iCalendar when the request carries `Accept: text/calendar` or the path ends in `.ics`.'
+  description: Tabula is the University of Warwick's system for the administration of teaching and learning.
   termsOfService: https://warwick.ac.uk/terms/
   contact:
     name: University of Warwick ITS Web Team
@@ -251,7 +245,70 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 components:
+  responses:
+    Forbidden:
+      description: Authenticated successfully but lacking permission for this request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServerError:
+      description: Something went wrong on the Tabula end.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: HTTP authentication failed or was not supplied.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            status: unauthorized
+            errors:
+            - message: API requests must be authenticated with HTTP Basic Auth or OAuth
   schemas:
+    TermWeeksResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - weeks
+        properties:
+          weeks:
+            type: array
+            items:
+              $ref: '#/components/schemas/Week'
+    TimetableEventsResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        properties:
+          events:
+            type: array
+            items:
+              $ref: '#/components/schemas/TimetableEvent'
+    Term:
+      type: object
+      properties:
+        name:
+          type: string
+          examples:
+          - Autumn
+        weekRange:
+          $ref: '#/components/schemas/WeekRange'
+        academicYear:
+          type: string
+          examples:
+          - 25/26
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
     Week:
       type: object
       properties:
@@ -269,6 +326,55 @@ components:
         end:
           type: string
           format: date
+    ErrorResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - errors
+        properties:
+          success:
+            const: false
+          errors:
+            type: array
+            items:
+              type: object
+              required:
+              - message
+              properties:
+                message:
+                  type: string
+    TermDatesResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - terms
+        properties:
+          terms:
+            type: array
+            items:
+              $ref: '#/components/schemas/Term'
+    HolidayDatesResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - dates
+        properties:
+          dates:
+            type: array
+            description: Holiday dates in ISO date format.
+            items:
+              type: string
+              format: date
+    WeekRange:
+      type: object
+      properties:
+        minWeek:
+          type: integer
+        maxWeek:
+          type: integer
     TimetableEvent:
       type: object
       description: Shape summarised from Warwick's "The Timetable Event object" reference page. Sourced from Syllabus+.
@@ -293,37 +399,6 @@ components:
           type: string
         endTime:
           type: string
-    TermWeeksResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - weeks
-        properties:
-          weeks:
-            type: array
-            items:
-              $ref: '#/components/schemas/Week'
-    TimetableEventsResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        properties:
-          events:
-            type: array
-            items:
-              $ref: '#/components/schemas/TimetableEvent'
-    TermDatesResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - terms
-        properties:
-          terms:
-            type: array
-            items:
-              $ref: '#/components/schemas/Term'
     Envelope:
       type: object
       description: Every Tabula response carries this envelope.
@@ -335,106 +410,7 @@ components:
           type: boolean
         status:
           type: string
-    WeekRange:
-      type: object
-      properties:
-        minWeek:
-          type: integer
-        maxWeek:
-          type: integer
-    ErrorResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - errors
-        properties:
-          success:
-            const: false
-          errors:
-            type: array
-            items:
-              type: object
-              required:
-              - message
-              properties:
-                message:
-                  type: string
-    Term:
-      type: object
-      properties:
-        name:
-          type: string
-          examples:
-          - Autumn
-        weekRange:
-          $ref: '#/components/schemas/WeekRange'
-        academicYear:
-          type: string
-          examples:
-          - 25/26
-        start:
-          type: string
-          format: date
-        end:
-          type: string
-          format: date
-    HolidayDatesResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - dates
-        properties:
-          dates:
-            type: array
-            description: Holiday dates in ISO date format.
-            items:
-              type: string
-              format: date
-  responses:
-    ServerError:
-      description: Something went wrong on the Tabula end.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    Unauthorized:
-      description: HTTP authentication failed or was not supplied.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            success: false
-            status: unauthorized
-            errors:
-            - message: API requests must be authenticated with HTTP Basic Auth or OAuth
-    Forbidden:
-      description: Authenticated successfully but lacking permission for this request.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
   parameters:
-    AcceptCalendar:
-      name: Accept
-      in: header
-      required: false
-      description: Send `text/calendar` to receive iCalendar instead of JSON.
-      schema:
-        type: string
-        enum:
-        - application/json
-        - text/calendar
-    AcademicYearQuery:
-      name: academicYear
-      in: query
-      required: false
-      description: The academic year in yy/yy form, e.g. `13/14`. Defaults to the current SITS academic year.
-      schema:
-        type: string
-      example: 25/26
     NumberingSystem:
       name: numberingSystem
       in: query
@@ -448,6 +424,40 @@ components:
         - cumulative
         - none
         default: academic
+    UniversityId:
+      name: universityId
+      in: path
+      required: true
+      description: The 7-digit University ID of the member. The special value `me` requests the currently authenticated user.
+      schema:
+        type: string
+      example: me
+    AcceptCalendar:
+      name: Accept
+      in: header
+      required: false
+      description: Send `text/calendar` to receive iCalendar instead of JSON.
+      schema:
+        type: string
+        enum:
+        - application/json
+        - text/calendar
+    ModuleCode:
+      name: moduleCode
+      in: path
+      required: true
+      description: The lowercase module code, e.g. `cs118`.
+      schema:
+        type: string
+      example: cs118
+    AcademicYearQuery:
+      name: academicYear
+      in: query
+      required: false
+      description: The academic year in yy/yy form, e.g. `13/14`. Defaults to the current SITS academic year.
+      schema:
+        type: string
+      example: 25/26
     AcademicYearPath:
       name: academicYear
       in: path
@@ -457,22 +467,6 @@ components:
         type: string
         pattern: ^[0-9]{4}$
       example: '2025'
-    UniversityId:
-      name: universityId
-      in: path
-      required: true
-      description: The 7-digit University ID of the member. The special value `me` requests the currently authenticated user.
-      schema:
-        type: string
-      example: me
-    ModuleCode:
-      name: moduleCode
-      in: path
-      required: true
-      description: The lowercase module code, e.g. `cs118`.
-      schema:
-        type: string
-      example: cs118
   securitySchemes:
     basicAuth:
       type: http

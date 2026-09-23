@@ -1,0 +1,129 @@
+generated: '2026-08-19'
+method: derived
+source: >-
+  openapi/university-of-warwick-tabula-openapi.yml,
+  openapi/university-of-warwick-wrap-oai-pmh-openapi.yml,
+  https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
+x-operator: institution
+vocabulary:
+  name: University of Warwick Domain Vocabulary
+  description: >-
+    Domain vocabulary for the University of Warwick's institution-operated programmable surface —
+    teaching and learning administration, the academic calendar, central identity, and the
+    research repository. Terms are taken from Warwick's own documentation and live responses,
+    not from generic higher-education language.
+  version: '2026-08-19'
+  terms:
+    - term: Tabula
+      definition: >-
+        The University of Warwick's own system for the administration of teaching and learning,
+        built and run by the Information and Digital Group (IDG) / IT Services software
+        engineering team. Covers departments and modules, coursework, small group teaching,
+        monitoring points, member profiles, timetabling and asynchronous jobs.
+      tags: [Platform, Core Concept, Institution-Operated]
+    - term: Web Sign-on
+      definition: >-
+        Warwick's central single sign-on service at websignon.warwick.ac.uk. It authenticates
+        users for every institutional web service and issues the OAuth 1.0a tokens used for
+        delegated API access.
+      tags: [Identity, Core Concept]
+    - term: External User account
+      definition: >-
+        An ITS-provisioned account created specifically for API access, distinct from a personal
+        staff or student account. Warwick documents that API scripts SHOULD authenticate as an
+        External User rather than as a person.
+      tags: [Identity, Access]
+    - term: University ID
+      definition: >-
+        The 7-digit identifier for a member of the University. Used as the path parameter on
+        member operations. The literal value `me` resolves to the currently authenticated user.
+      tags: [Identifier, Profiles]
+    - term: Academic year
+      definition: >-
+        Warwick's academic year runs from 1 August to 31 July and is expressed two ways depending
+        on the operation — as a 4-digit start year in path parameters (`2025`) and as yy/yy in
+        query parameters (`25/26`).
+      tags: [Calendar, Core Concept]
+    - term: Term week
+      definition: >-
+        A numbered week of the academic year. Warwick supports four numbering systems —
+        `academic` (1 to 52 across the year), `term` (restarting each term), `cumulative`
+        (continuing across terms) and `none` (dates only). Pre-term vacation weeks are negative,
+        running from week -9.
+      tags: [Calendar, Timetabling]
+    - term: Week range
+      definition: >-
+        A minWeek/maxWeek pair bounding a term, vacation or recurring timetable event.
+      tags: [Calendar, Timetabling]
+    - term: Syllabus+
+      definition: >-
+        The scheduling dataset behind Warwick's timetable feeds. Warwick documents that the
+        timetable operations currently expose Syllabus+ data only, and that any future source
+        will be opt-in. Syllabus+ usually retains only the current academic year.
+      tags: [Timetabling, Data Source]
+    - term: Monitoring point
+      definition: >-
+        A recorded attendance or engagement checkpoint against a student, used for the
+        University's attendance monitoring obligations.
+      tags: [Profiles, Compliance]
+    - term: Small group teaching
+      definition: >-
+        Seminars, tutorials and labs modelled in Tabula as small group sets, small groups, small
+        group events and allocations, with attendance recorded per event.
+      tags: [Teaching, Core Concept]
+    - term: Module code
+      definition: >-
+        The identifier for a taught module, e.g. `cs118`. Tabula requires the lowercase form in
+        URLs.
+      tags: [Identifier, Administration]
+    - term: Department code
+      definition: >-
+        The identifier for an academic or administrative department, e.g. `cs`. Tabula requires
+        the lowercase form in URLs. Departments may nest via subDepartments.
+      tags: [Identifier, Administration]
+    - term: Job instance
+      definition: >-
+        A long-running asynchronous Tabula task, polled for progress and completion rather than
+        awaited inline.
+      tags: [Operations, Async]
+    - term: Tabula envelope
+      definition: >-
+        The response wrapper used by every Tabula response, successful or not — a `success`
+        boolean, a `status` slug, and either the named payload key or an `errors` array of
+        message objects. Not RFC 9457.
+      tags: [Contract, Errors]
+    - term: OAuth service scope
+      definition: >-
+        A Warwick-specific URN naming the institutional service a token may reach, e.g.
+        `urn:files.warwick.ac.uk:files:service`. Not part of the OAuth 1.0a standard. Multiple
+        scopes are joined with `+` in a single `scope` parameter, which cannot travel in the
+        Authorization header.
+      tags: [Identity, Access, Warwick-Specific]
+    - term: WRAP
+      definition: >-
+        Warwick Research Archive Portal — the University's institutional repository of research
+        outputs, running EPrints 3.4.5 on Warwick's own infrastructure and harvestable over
+        OAI-PMH 2.0.
+      tags: [Research, Repository, Institution-Operated]
+    - term: RIOXX
+      definition: >-
+        The UK research-outputs metadata application profile used for REF open-access compliance.
+        WRAP disseminates RIOXX 2.0 alongside Dublin Core and OpenAIRE.
+      tags: [Research, Standard, United Kingdom]
+    - term: OAI-PMH set
+      definition: >-
+        A harvestable subset of the repository. WRAP publishes 312 sets, grouped by publication
+        status, Library of Congress subject, division, type and year.
+      tags: [Research, Repository, Harvesting]
+    - term: Sitebuilder
+      definition: >-
+        Warwick's own institutional web content management system, which serves warwick.ac.uk and
+        is reachable through OAuth with separate read and edit scopes. It is also what renders the
+        `?markdown` twin of every page.
+      tags: [Platform, Content, Institution-Operated]
+    - term: markdown query parameter
+      definition: >-
+        A Warwick-specific agent affordance, documented in the institution's llms.txt: appending
+        `?markdown` (or `markdown=true`) to any warwick.ac.uk page URL returns that page rendered
+        as concise Markdown instead of HTML. Verified working.
+      tags: [Agent Surface, Content, Warwick-Specific]
