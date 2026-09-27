@@ -53,22 +53,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    JobResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        properties:
-          job:
-            type: object
-            properties:
-              id:
-                type: string
-              status:
-                type: string
-              succeeded:
-                type: boolean
-              progress:
-                type: integer
     ErrorResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -87,6 +71,22 @@ components:
               properties:
                 message:
                   type: string
+    JobResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        properties:
+          job:
+            type: object
+            properties:
+              id:
+                type: string
+              status:
+                type: string
+              succeeded:
+                type: boolean
+              progress:
+                type: integer
     Envelope:
       type: object
       description: Every Tabula response carries this envelope.
@@ -99,17 +99,6 @@ components:
         status:
           type: string
   responses:
-    NotFound:
-      description: The resource does not exist. Warwick documents that this can also occur when the request Content-Type is not application/json.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            success: false
-            status: not_found
-            errors:
-            - message: We don't know anything about this page
     Unauthorized:
       description: HTTP authentication failed or was not supplied.
       content:
@@ -121,6 +110,17 @@ components:
             status: unauthorized
             errors:
             - message: API requests must be authenticated with HTTP Basic Auth or OAuth
+    NotFound:
+      description: The resource does not exist. Warwick documents that this can also occur when the request Content-Type is not application/json.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            status: not_found
+            errors:
+            - message: We don't know anything about this page
   securitySchemes:
     basicAuth:
       type: http

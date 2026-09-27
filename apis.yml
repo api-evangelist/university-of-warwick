@@ -308,8 +308,8 @@ apis:
 - aid: university-of-warwick:university-of-warwick-oai-pmh-api
   name: University of Warwick OAI PMH API
   description: Open Archives Initiative Protocol for Metadata Harvesting, version 2.0.
-  humanURL: https://warwick.ac.uk/services/idg/services-support/web/tabula/api/
-  baseURL: https://tabula.warwick.ac.uk/api/v1
+  humanURL: https://wrap.warwick.ac.uk/
+  baseURL: https://wrap.warwick.ac.uk/cgi/oai2
   tags:
   - OAI-PMH
   properties:

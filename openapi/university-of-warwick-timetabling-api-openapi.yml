@@ -245,31 +245,18 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 components:
-  responses:
-    Forbidden:
-      description: Authenticated successfully but lacking permission for this request.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    ServerError:
-      description: Something went wrong on the Tabula end.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    Unauthorized:
-      description: HTTP authentication failed or was not supplied.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            success: false
-            status: unauthorized
-            errors:
-            - message: API requests must be authenticated with HTTP Basic Auth or OAuth
   schemas:
+    TermDatesResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - terms
+        properties:
+          terms:
+            type: array
+            items:
+              $ref: '#/components/schemas/Term'
     TermWeeksResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -281,51 +268,13 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Week'
-    TimetableEventsResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        properties:
-          events:
-            type: array
-            items:
-              $ref: '#/components/schemas/TimetableEvent'
-    Term:
+    WeekRange:
       type: object
       properties:
-        name:
-          type: string
-          examples:
-          - Autumn
-        weekRange:
-          $ref: '#/components/schemas/WeekRange'
-        academicYear:
-          type: string
-          examples:
-          - 25/26
-        start:
-          type: string
-          format: date
-        end:
-          type: string
-          format: date
-    Week:
-      type: object
-      properties:
-        name:
-          type: string
-          examples:
-          - Term 1, week 1
-        academicYear:
-          type: string
-        weekNumber:
+        minWeek:
           type: integer
-        start:
-          type: string
-          format: date
-        end:
-          type: string
-          format: date
+        maxWeek:
+          type: integer
     ErrorResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -344,37 +293,6 @@ components:
               properties:
                 message:
                   type: string
-    TermDatesResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - terms
-        properties:
-          terms:
-            type: array
-            items:
-              $ref: '#/components/schemas/Term'
-    HolidayDatesResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - dates
-        properties:
-          dates:
-            type: array
-            description: Holiday dates in ISO date format.
-            items:
-              type: string
-              format: date
-    WeekRange:
-      type: object
-      properties:
-        minWeek:
-          type: integer
-        maxWeek:
-          type: integer
     TimetableEvent:
       type: object
       description: Shape summarised from Warwick's "The Timetable Event object" reference page. Sourced from Syllabus+.
@@ -399,6 +317,28 @@ components:
           type: string
         endTime:
           type: string
+    HolidayDatesResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - dates
+        properties:
+          dates:
+            type: array
+            description: Holiday dates in ISO date format.
+            items:
+              type: string
+              format: date
+    TimetableEventsResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        properties:
+          events:
+            type: array
+            items:
+              $ref: '#/components/schemas/TimetableEvent'
     Envelope:
       type: object
       description: Every Tabula response carries this envelope.
@@ -410,7 +350,51 @@ components:
           type: boolean
         status:
           type: string
+    Week:
+      type: object
+      properties:
+        name:
+          type: string
+          examples:
+          - Term 1, week 1
+        academicYear:
+          type: string
+        weekNumber:
+          type: integer
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+    Term:
+      type: object
+      properties:
+        name:
+          type: string
+          examples:
+          - Autumn
+        weekRange:
+          $ref: '#/components/schemas/WeekRange'
+        academicYear:
+          type: string
+          examples:
+          - 25/26
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
   parameters:
+    ModuleCode:
+      name: moduleCode
+      in: path
+      required: true
+      description: The lowercase module code, e.g. `cs118`.
+      schema:
+        type: string
+      example: cs118
     NumberingSystem:
       name: numberingSystem
       in: query
@@ -424,6 +408,15 @@ components:
         - cumulative
         - none
         default: academic
+    AcademicYearPath:
+      name: academicYear
+      in: path
+      required: true
+      description: The academic year as a 4-digit start year — for 13/14 use `2013`. Defaults to the current academic year, which starts on 1 August.
+      schema:
+        type: string
+        pattern: ^[0-9]{4}$
+      example: '2025'
     UniversityId:
       name: universityId
       in: path
@@ -432,6 +425,14 @@ components:
       schema:
         type: string
       example: me
+    AcademicYearQuery:
+      name: academicYear
+      in: query
+      required: false
+      description: The academic year in yy/yy form, e.g. `13/14`. Defaults to the current SITS academic year.
+      schema:
+        type: string
+      example: 25/26
     AcceptCalendar:
       name: Accept
       in: header
@@ -442,31 +443,30 @@ components:
         enum:
         - application/json
         - text/calendar
-    ModuleCode:
-      name: moduleCode
-      in: path
-      required: true
-      description: The lowercase module code, e.g. `cs118`.
-      schema:
-        type: string
-      example: cs118
-    AcademicYearQuery:
-      name: academicYear
-      in: query
-      required: false
-      description: The academic year in yy/yy form, e.g. `13/14`. Defaults to the current SITS academic year.
-      schema:
-        type: string
-      example: 25/26
-    AcademicYearPath:
-      name: academicYear
-      in: path
-      required: true
-      description: The academic year as a 4-digit start year — for 13/14 use `2013`. Defaults to the current academic year, which starts on 1 August.
-      schema:
-        type: string
-        pattern: ^[0-9]{4}$
-      example: '2025'
+  responses:
+    Unauthorized:
+      description: HTTP authentication failed or was not supplied.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            status: unauthorized
+            errors:
+            - message: API requests must be authenticated with HTTP Basic Auth or OAuth
+    ServerError:
+      description: Something went wrong on the Tabula end.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Authenticated successfully but lacking permission for this request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
   securitySchemes:
     basicAuth:
       type: http
