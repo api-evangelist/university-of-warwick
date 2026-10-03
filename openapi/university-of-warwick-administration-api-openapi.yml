@@ -104,6 +104,53 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
+    Department:
+      type: object
+      description: Shape summarised from Warwick's "The Department object" reference page. Field-level detail beyond code/name/subDepartments is behind the authenticated surface and is deliberately not asserted here.
+      properties:
+        code:
+          type: string
+          examples:
+          - cs
+        name:
+          type: string
+          examples:
+          - Computer Science
+        subDepartments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Department'
+    Module:
+      type: object
+      properties:
+        code:
+          type: string
+          examples:
+          - cs118
+        name:
+          type: string
+        adminDepartment:
+          $ref: '#/components/schemas/Department'
+    DepartmentResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - department
+        properties:
+          department:
+            $ref: '#/components/schemas/Department'
+    Envelope:
+      type: object
+      description: Every Tabula response carries this envelope.
+      required:
+      - success
+      - status
+      properties:
+        success:
+          type: boolean
+        status:
+          type: string
     ErrorResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -122,26 +169,6 @@ components:
               properties:
                 message:
                   type: string
-    DepartmentResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - department
-        properties:
-          department:
-            $ref: '#/components/schemas/Department'
-    Module:
-      type: object
-      properties:
-        code:
-          type: string
-          examples:
-          - cs118
-        name:
-          type: string
-        adminDepartment:
-          $ref: '#/components/schemas/Department'
     DepartmentsResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -164,45 +191,7 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Module'
-    Envelope:
-      type: object
-      description: Every Tabula response carries this envelope.
-      required:
-      - success
-      - status
-      properties:
-        success:
-          type: boolean
-        status:
-          type: string
-    Department:
-      type: object
-      description: Shape summarised from Warwick's "The Department object" reference page. Field-level detail beyond code/name/subDepartments is behind the authenticated surface and is deliberately not asserted here.
-      properties:
-        code:
-          type: string
-          examples:
-          - cs
-        name:
-          type: string
-          examples:
-          - Computer Science
-        subDepartments:
-          type: array
-          items:
-            $ref: '#/components/schemas/Department'
   responses:
-    Unauthorized:
-      description: HTTP authentication failed or was not supplied.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            success: false
-            status: unauthorized
-            errors:
-            - message: API requests must be authenticated with HTTP Basic Auth or OAuth
     NotFound:
       description: The resource does not exist. Warwick documents that this can also occur when the request Content-Type is not application/json.
       content:
@@ -214,6 +203,17 @@ components:
             status: not_found
             errors:
             - message: We don't know anything about this page
+    Unauthorized:
+      description: HTTP authentication failed or was not supplied.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            status: unauthorized
+            errors:
+            - message: API requests must be authenticated with HTTP Basic Auth or OAuth
   parameters:
     DepartmentCode:
       name: departmentCode
