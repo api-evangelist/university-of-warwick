@@ -1,0 +1,8 @@
+---
+title: "events-wct"
+url: "https://warwick.ac.uk/news/events-wct/"
+date: "2026-10-03"
+author: "Unknown"
+feed_url: "https://warwick.ac.uk/sitebuilder2/api/rss/siteChanges.rss?page=/news"
+---
+Last updated: 01:00, Thu 1 Jan 1970 by
