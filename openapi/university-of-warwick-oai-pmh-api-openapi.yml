@@ -96,48 +96,6 @@ paths:
                 $ref: '#/components/schemas/OaiPmhEnvelope'
 components:
   schemas:
-    Identify:
-      type: object
-      properties:
-        repositoryName:
-          type: string
-          examples:
-          - 'WRAP: Warwick Research Archive Portal'
-        baseURL:
-          type: string
-          examples:
-          - https://wrap.warwick.ac.uk/cgi/oai2
-        protocolVersion:
-          type: string
-          examples:
-          - '2.0'
-        adminEmail:
-          type: string
-          examples:
-          - wrap@warwick.ac.uk
-        earliestDatestamp:
-          type: string
-          examples:
-          - '2010-11-19T12:47:24Z'
-        deletedRecord:
-          type: string
-          enum:
-          - 'no'
-          - persistent
-          - transient
-        granularity:
-          type: string
-          examples:
-          - YYYY-MM-DDThh:mm:ssZ
-    Set:
-      type: object
-      properties:
-        setSpec:
-          type: string
-        setName:
-          type: string
-          examples:
-          - Status = Published
     MetadataFormat:
       type: object
       properties:
@@ -182,6 +140,48 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Set'
+    Identify:
+      type: object
+      properties:
+        repositoryName:
+          type: string
+          examples:
+          - 'WRAP: Warwick Research Archive Portal'
+        baseURL:
+          type: string
+          examples:
+          - https://wrap.warwick.ac.uk/cgi/oai2
+        protocolVersion:
+          type: string
+          examples:
+          - '2.0'
+        adminEmail:
+          type: string
+          examples:
+          - wrap@warwick.ac.uk
+        earliestDatestamp:
+          type: string
+          examples:
+          - '2010-11-19T12:47:24Z'
+        deletedRecord:
+          type: string
+          enum:
+          - 'no'
+          - persistent
+          - transient
+        granularity:
+          type: string
+          examples:
+          - YYYY-MM-DDThh:mm:ssZ
+    Set:
+      type: object
+      properties:
+        setSpec:
+          type: string
+        setName:
+          type: string
+          examples:
+          - Status = Published
 externalDocs:
   description: OAI-PMH 2.0 protocol specification
   url: http://www.openarchives.org/OAI/openarchivesprotocol.html

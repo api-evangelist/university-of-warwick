@@ -245,31 +245,17 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 components:
-  responses:
-    Unauthorized:
-      description: HTTP authentication failed or was not supplied.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            success: false
-            status: unauthorized
-            errors:
-            - message: API requests must be authenticated with HTTP Basic Auth or OAuth
-    Forbidden:
-      description: Authenticated successfully but lacking permission for this request.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    ServerError:
-      description: Something went wrong on the Tabula end.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
   parameters:
+    AcceptCalendar:
+      name: Accept
+      in: header
+      required: false
+      description: Send `text/calendar` to receive iCalendar instead of JSON.
+      schema:
+        type: string
+        enum:
+        - application/json
+        - text/calendar
     ModuleCode:
       name: moduleCode
       in: path
@@ -278,6 +264,14 @@ components:
       schema:
         type: string
       example: cs118
+    UniversityId:
+      name: universityId
+      in: path
+      required: true
+      description: The 7-digit University ID of the member. The special value `me` requests the currently authenticated user.
+      schema:
+        type: string
+      example: me
     AcademicYearQuery:
       name: academicYear
       in: query
@@ -286,15 +280,6 @@ components:
       schema:
         type: string
       example: 25/26
-    AcademicYearPath:
-      name: academicYear
-      in: path
-      required: true
-      description: The academic year as a 4-digit start year — for 13/14 use `2013`. Defaults to the current academic year, which starts on 1 August.
-      schema:
-        type: string
-        pattern: ^[0-9]{4}$
-      example: '2025'
     NumberingSystem:
       name: numberingSystem
       in: query
@@ -308,71 +293,16 @@ components:
         - cumulative
         - none
         default: academic
-    UniversityId:
-      name: universityId
+    AcademicYearPath:
+      name: academicYear
       in: path
       required: true
-      description: The 7-digit University ID of the member. The special value `me` requests the currently authenticated user.
+      description: The academic year as a 4-digit start year — for 13/14 use `2013`. Defaults to the current academic year, which starts on 1 August.
       schema:
         type: string
-      example: me
-    AcceptCalendar:
-      name: Accept
-      in: header
-      required: false
-      description: Send `text/calendar` to receive iCalendar instead of JSON.
-      schema:
-        type: string
-        enum:
-        - application/json
-        - text/calendar
+        pattern: ^[0-9]{4}$
+      example: '2025'
   schemas:
-    ErrorResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - errors
-        properties:
-          success:
-            const: false
-          errors:
-            type: array
-            items:
-              type: object
-              required:
-              - message
-              properties:
-                message:
-                  type: string
-    TermDatesResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - terms
-        properties:
-          terms:
-            type: array
-            items:
-              $ref: '#/components/schemas/Term'
-    Week:
-      type: object
-      properties:
-        name:
-          type: string
-          examples:
-          - Term 1, week 1
-        academicYear:
-          type: string
-        weekNumber:
-          type: integer
-        start:
-          type: string
-          format: date
-        end:
-          type: string
-          format: date
     TimetableEvent:
       type: object
       description: Shape summarised from Warwick's "The Timetable Event object" reference page. Sourced from Syllabus+.
@@ -397,6 +327,47 @@ components:
           type: string
         endTime:
           type: string
+    HolidayDatesResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - dates
+        properties:
+          dates:
+            type: array
+            description: Holiday dates in ISO date format.
+            items:
+              type: string
+              format: date
+    TermWeeksResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - weeks
+        properties:
+          weeks:
+            type: array
+            items:
+              $ref: '#/components/schemas/Week'
+    Week:
+      type: object
+      properties:
+        name:
+          type: string
+          examples:
+          - Term 1, week 1
+        academicYear:
+          type: string
+        weekNumber:
+          type: integer
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
     WeekRange:
       type: object
       properties:
@@ -404,6 +375,24 @@ components:
           type: integer
         maxWeek:
           type: integer
+    ErrorResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - errors
+        properties:
+          success:
+            const: false
+          errors:
+            type: array
+            items:
+              type: object
+              required:
+              - message
+              properties:
+                message:
+                  type: string
     Term:
       type: object
       properties:
@@ -423,19 +412,17 @@ components:
         end:
           type: string
           format: date
-    HolidayDatesResponse:
+    TermDatesResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
       - type: object
         required:
-        - dates
+        - terms
         properties:
-          dates:
+          terms:
             type: array
-            description: Holiday dates in ISO date format.
             items:
-              type: string
-              format: date
+              $ref: '#/components/schemas/Term'
     Envelope:
       type: object
       description: Every Tabula response carries this envelope.
@@ -456,17 +443,30 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/TimetableEvent'
-    TermWeeksResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - weeks
-        properties:
-          weeks:
-            type: array
-            items:
-              $ref: '#/components/schemas/Week'
+  responses:
+    Unauthorized:
+      description: HTTP authentication failed or was not supplied.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            status: unauthorized
+            errors:
+            - message: API requests must be authenticated with HTTP Basic Auth or OAuth
+    ServerError:
+      description: Something went wrong on the Tabula end.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Authenticated successfully but lacking permission for this request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
   securitySchemes:
     basicAuth:
       type: http

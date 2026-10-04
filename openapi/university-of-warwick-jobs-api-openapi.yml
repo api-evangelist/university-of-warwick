@@ -53,17 +53,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   responses:
-    NotFound:
-      description: The resource does not exist. Warwick documents that this can also occur when the request Content-Type is not application/json.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            success: false
-            status: not_found
-            errors:
-            - message: We don't know anything about this page
     Unauthorized:
       description: HTTP authentication failed or was not supplied.
       content:
@@ -75,34 +64,18 @@ components:
             status: unauthorized
             errors:
             - message: API requests must be authenticated with HTTP Basic Auth or OAuth
+    NotFound:
+      description: The resource does not exist. Warwick documents that this can also occur when the request Content-Type is not application/json.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            status: not_found
+            errors:
+            - message: We don't know anything about this page
   schemas:
-    JobResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        properties:
-          job:
-            type: object
-            properties:
-              id:
-                type: string
-              status:
-                type: string
-              succeeded:
-                type: boolean
-              progress:
-                type: integer
-    Envelope:
-      type: object
-      description: Every Tabula response carries this envelope.
-      required:
-      - success
-      - status
-      properties:
-        success:
-          type: boolean
-        status:
-          type: string
     ErrorResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -121,6 +94,33 @@ components:
               properties:
                 message:
                   type: string
+    Envelope:
+      type: object
+      description: Every Tabula response carries this envelope.
+      required:
+      - success
+      - status
+      properties:
+        success:
+          type: boolean
+        status:
+          type: string
+    JobResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        properties:
+          job:
+            type: object
+            properties:
+              id:
+                type: string
+              status:
+                type: string
+              succeeded:
+                type: boolean
+              progress:
+                type: integer
   securitySchemes:
     basicAuth:
       type: http
