@@ -96,15 +96,6 @@ paths:
                 $ref: '#/components/schemas/OaiPmhEnvelope'
 components:
   schemas:
-    MetadataFormat:
-      type: object
-      properties:
-        metadataPrefix:
-          type: string
-        schema:
-          type: string
-        metadataNamespace:
-          type: string
     OaiPmhEnvelope:
       type: object
       description: The OAI-PMH 2.0 root element, namespace http://www.openarchives.org/OAI/2.0/. Modelled structurally; the authoritative definition is the OAI-PMH XML Schema at http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd.
@@ -140,6 +131,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Set'
+    Set:
+      type: object
+      properties:
+        setSpec:
+          type: string
+        setName:
+          type: string
+          examples:
+          - Status = Published
     Identify:
       type: object
       properties:
@@ -173,15 +173,15 @@ components:
           type: string
           examples:
           - YYYY-MM-DDThh:mm:ssZ
-    Set:
+    MetadataFormat:
       type: object
       properties:
-        setSpec:
+        metadataPrefix:
           type: string
-        setName:
+        schema:
           type: string
-          examples:
-          - Status = Published
+        metadataNamespace:
+          type: string
 externalDocs:
   description: OAI-PMH 2.0 protocol specification
   url: http://www.openarchives.org/OAI/openarchivesprotocol.html

@@ -245,64 +245,53 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 components:
-  parameters:
-    AcceptCalendar:
-      name: Accept
-      in: header
-      required: false
-      description: Send `text/calendar` to receive iCalendar instead of JSON.
-      schema:
-        type: string
-        enum:
-        - application/json
-        - text/calendar
-    ModuleCode:
-      name: moduleCode
-      in: path
-      required: true
-      description: The lowercase module code, e.g. `cs118`.
-      schema:
-        type: string
-      example: cs118
-    UniversityId:
-      name: universityId
-      in: path
-      required: true
-      description: The 7-digit University ID of the member. The special value `me` requests the currently authenticated user.
-      schema:
-        type: string
-      example: me
-    AcademicYearQuery:
-      name: academicYear
-      in: query
-      required: false
-      description: The academic year in yy/yy form, e.g. `13/14`. Defaults to the current SITS academic year.
-      schema:
-        type: string
-      example: 25/26
-    NumberingSystem:
-      name: numberingSystem
-      in: query
-      required: false
-      description: Week naming system. `academic` runs 1–52 through the year; `term` restarts at each term; `cumulative` continues across terms; `none` always uses dates.
-      schema:
-        type: string
-        enum:
-        - academic
-        - term
-        - cumulative
-        - none
-        default: academic
-    AcademicYearPath:
-      name: academicYear
-      in: path
-      required: true
-      description: The academic year as a 4-digit start year — for 13/14 use `2013`. Defaults to the current academic year, which starts on 1 August.
-      schema:
-        type: string
-        pattern: ^[0-9]{4}$
-      example: '2025'
   schemas:
+    WeekRange:
+      type: object
+      properties:
+        minWeek:
+          type: integer
+        maxWeek:
+          type: integer
+    TermDatesResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - terms
+        properties:
+          terms:
+            type: array
+            items:
+              $ref: '#/components/schemas/Term'
+    TimetableEventsResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        properties:
+          events:
+            type: array
+            items:
+              $ref: '#/components/schemas/TimetableEvent'
+    Term:
+      type: object
+      properties:
+        name:
+          type: string
+          examples:
+          - Autumn
+        weekRange:
+          $ref: '#/components/schemas/WeekRange'
+        academicYear:
+          type: string
+          examples:
+          - 25/26
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
     TimetableEvent:
       type: object
       description: Shape summarised from Warwick's "The Timetable Event object" reference page. Sourced from Syllabus+.
@@ -327,19 +316,6 @@ components:
           type: string
         endTime:
           type: string
-    HolidayDatesResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - dates
-        properties:
-          dates:
-            type: array
-            description: Holiday dates in ISO date format.
-            items:
-              type: string
-              format: date
     TermWeeksResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -351,30 +327,6 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Week'
-    Week:
-      type: object
-      properties:
-        name:
-          type: string
-          examples:
-          - Term 1, week 1
-        academicYear:
-          type: string
-        weekNumber:
-          type: integer
-        start:
-          type: string
-          format: date
-        end:
-          type: string
-          format: date
-    WeekRange:
-      type: object
-      properties:
-        minWeek:
-          type: integer
-        maxWeek:
-          type: integer
     ErrorResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
@@ -393,36 +345,23 @@ components:
               properties:
                 message:
                   type: string
-    Term:
+    Week:
       type: object
       properties:
         name:
           type: string
           examples:
-          - Autumn
-        weekRange:
-          $ref: '#/components/schemas/WeekRange'
+          - Term 1, week 1
         academicYear:
           type: string
-          examples:
-          - 25/26
+        weekNumber:
+          type: integer
         start:
           type: string
           format: date
         end:
           type: string
           format: date
-    TermDatesResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - terms
-        properties:
-          terms:
-            type: array
-            items:
-              $ref: '#/components/schemas/Term'
     Envelope:
       type: object
       description: Every Tabula response carries this envelope.
@@ -434,15 +373,76 @@ components:
           type: boolean
         status:
           type: string
-    TimetableEventsResponse:
+    HolidayDatesResponse:
       allOf:
       - $ref: '#/components/schemas/Envelope'
       - type: object
+        required:
+        - dates
         properties:
-          events:
+          dates:
             type: array
+            description: Holiday dates in ISO date format.
             items:
-              $ref: '#/components/schemas/TimetableEvent'
+              type: string
+              format: date
+  parameters:
+    AcceptCalendar:
+      name: Accept
+      in: header
+      required: false
+      description: Send `text/calendar` to receive iCalendar instead of JSON.
+      schema:
+        type: string
+        enum:
+        - application/json
+        - text/calendar
+    NumberingSystem:
+      name: numberingSystem
+      in: query
+      required: false
+      description: Week naming system. `academic` runs 1–52 through the year; `term` restarts at each term; `cumulative` continues across terms; `none` always uses dates.
+      schema:
+        type: string
+        enum:
+        - academic
+        - term
+        - cumulative
+        - none
+        default: academic
+    UniversityId:
+      name: universityId
+      in: path
+      required: true
+      description: The 7-digit University ID of the member. The special value `me` requests the currently authenticated user.
+      schema:
+        type: string
+      example: me
+    AcademicYearQuery:
+      name: academicYear
+      in: query
+      required: false
+      description: The academic year in yy/yy form, e.g. `13/14`. Defaults to the current SITS academic year.
+      schema:
+        type: string
+      example: 25/26
+    AcademicYearPath:
+      name: academicYear
+      in: path
+      required: true
+      description: The academic year as a 4-digit start year — for 13/14 use `2013`. Defaults to the current academic year, which starts on 1 August.
+      schema:
+        type: string
+        pattern: ^[0-9]{4}$
+      example: '2025'
+    ModuleCode:
+      name: moduleCode
+      in: path
+      required: true
+      description: The lowercase module code, e.g. `cs118`.
+      schema:
+        type: string
+      example: cs118
   responses:
     Unauthorized:
       description: HTTP authentication failed or was not supplied.

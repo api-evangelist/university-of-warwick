@@ -52,6 +52,52 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  schemas:
+    ErrorResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        required:
+        - errors
+        properties:
+          success:
+            const: false
+          errors:
+            type: array
+            items:
+              type: object
+              required:
+              - message
+              properties:
+                message:
+                  type: string
+    JobResponse:
+      allOf:
+      - $ref: '#/components/schemas/Envelope'
+      - type: object
+        properties:
+          job:
+            type: object
+            properties:
+              id:
+                type: string
+              status:
+                type: string
+              succeeded:
+                type: boolean
+              progress:
+                type: integer
+    Envelope:
+      type: object
+      description: Every Tabula response carries this envelope.
+      required:
+      - success
+      - status
+      properties:
+        success:
+          type: boolean
+        status:
+          type: string
   responses:
     Unauthorized:
       description: HTTP authentication failed or was not supplied.
@@ -75,52 +121,6 @@ components:
             status: not_found
             errors:
             - message: We don't know anything about this page
-  schemas:
-    ErrorResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        required:
-        - errors
-        properties:
-          success:
-            const: false
-          errors:
-            type: array
-            items:
-              type: object
-              required:
-              - message
-              properties:
-                message:
-                  type: string
-    Envelope:
-      type: object
-      description: Every Tabula response carries this envelope.
-      required:
-      - success
-      - status
-      properties:
-        success:
-          type: boolean
-        status:
-          type: string
-    JobResponse:
-      allOf:
-      - $ref: '#/components/schemas/Envelope'
-      - type: object
-        properties:
-          job:
-            type: object
-            properties:
-              id:
-                type: string
-              status:
-                type: string
-              succeeded:
-                type: boolean
-              progress:
-                type: integer
   securitySchemes:
     basicAuth:
       type: http
