@@ -183,6 +183,9 @@ apis:
     no public Moodle information page (/services/its/servicessupport/web/moodle/ and /services/academictechnology/moodle/
     both 404). Only the web service endpoint is live, so only it is emitted.
   tags:
+  - LMS
+  - Education
+  tags_raw:
   - Learning Management
   - Education
 - aid: university-of-warwick:library-discovery
